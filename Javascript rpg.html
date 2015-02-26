@@ -53,6 +53,7 @@ var footstep = document.getElementById('footstep');
 var music = document.getElementById('music');
 var subjective = document.getElementById("subjective");
 var objective = document.getElementById("objective");
+var moveSidePos = 0;
 var movePos = 0;
 
 
@@ -238,14 +239,19 @@ function updateAnimation(caseNumbers)
 		//Left arrow
 		if(caseNumbers == 37)
 		{
-			units = units - 10;
-			posX = posX - 10
-			if(movePos == 0){cutPosX = 2200;}
-			if(movePos == 1){cutPosX = 2400;}
-			if(movePos == 2){cutPosX = 2600;}
-			movePos++;
-			if(movePos == 3)
-			{movePos = 0;}
+			if(units == 7.5 || units == 15 || units == 22.5 || units == 30)
+			{
+			if(moveSidePos == 0){cutPosX = 2200;}
+			if(moveSidePos == 1){cutPosX = 2400;}
+			if(moveSidePos == 2){cutPosX = 2600;}
+			if(moveSidePos == 3){cutPosX = 2400;}
+			moveSidePos++;
+			if(moveSidePos == 4)
+			{moveSidePos = 0;}
+			}
+			units = units - 1.5;
+			posX = posX - 1.5;
+			
 			if (posX < 0)
 			{
 				// If at edge, reset char position and set flag.
@@ -260,7 +266,12 @@ function updateAnimation(caseNumbers)
 		{
 			units = units - 10;
 			posX = posX + 10;
-			  cutPosX = 1400;
+			  if(moveSidePos == 0){cutPosX = 1400;}
+			if(moveSidePos == 1){cutPosX = 1600;}
+			if(moveSidePos == 2){cutPosX = 1800;}
+			moveSidePos++;
+			if(moveSidePos == 3)
+			{moveSidePos = 0;}
 			  if (posX > 270) {
 				// If at edge, reset char position and set flag.
 				posX = 270;
@@ -274,7 +285,11 @@ function updateAnimation(caseNumbers)
 		{
 			units = units - 10;
 			posY = posY + 10;
-			cutPosX = 200;
+			if(movePos == 0){cutPosX = 200;}
+			if(movePos == 1){cutPosX = 400;}
+			movePos++;
+			if(movePos == 2)
+			{movePos = 0;}
           if (posY > 270) {
             // If at edge, reset ship position and set flag.
             posY = 270;
@@ -287,7 +302,11 @@ function updateAnimation(caseNumbers)
 		{
 			units = units - 10;
 			posY = posY - 10;
-			cutPosX = 800;
+			if(movePos == 0){cutPosX = 800;}
+			if(movePos == 1){cutPosX = 1000;}
+			movePos++;
+			if(movePos == 2)
+			{movePos = 0;}
           if (posY < 0) {
             // If at edge, reset ship position and set flag.
             posY = 0;
