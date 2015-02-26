@@ -1,0 +1,375 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="theme.css">
+</head>
+<body>
+
+<audio id="music" type="audio/mp3" src="Vince--A-Walk.mp3" autoplay loop>
+</audio>
+<audio id="footstep" type="audio/mp3" src="footstepFloor.mp3">
+</audio>
+<div style="float:left;">
+<canvas id="myCanvas" onclick="myCanvas()" width="320" height="320"
+style="border:1px solid #000000;">
+Your browser does not support the HTML5 canvas tag.
+</canvas>
+<p>
+Controls:<br>
+Move with arrow keys.<br>
+Interact with Ctrl.<br>
+Find objects with mouse click.
+</p>
+</div>
+<div style="margin-left:10cm;">
+Objectives:<br>
+<div id="objective">
+Get out of the classroom.<br>
+</div><br>
+Subjective:<br>
+<div id="subjective">
+</div>
+</div>
+
+<script>
+var canvas = document.getElementById('myCanvas'),
+context = canvas.getContext('2d');
+
+posX = 0;
+posY = 0;
+cutPosX = 0;
+cutWidthX = 200;
+cutPosY = 0;
+var charReset;
+var door = 0;
+var locationEvent = 'classroom';
+var moving = 0;
+var units = 0;
+var caseNumber = 0;
+var roam = 1;
+var battle = 0;
+var transition = 0;
+var transitionX = -320;
+var footstep = document.getElementById('footstep');
+var music = document.getElementById('music');
+var subjective = document.getElementById("subjective");
+var objective = document.getElementById("objective");
+var movePos = 0;
+
+
+base_image = new Image();
+base_image.src = 'sprite.png';
+
+background = new Image();
+background.src = 'Background.gif';
+
+transitionImage = new Image();
+transitionImage.src = 'transitionImage.gif';
+
+npc1 = new Image();
+var npc1PosX;
+var npc1PosY;
+
+npc2 = new Image();
+var npc2PosX;
+var npc2PosY;
+
+music.volume = 0.1;
+
+document.addEventListener('keydown', updateMovement);
+canvas.addEventListener('mousedown', mouseClick);
+//window.addEventListener('load', render);
+var FPS = 30;
+setInterval(function() {
+//function render(){
+
+  update();
+  draw();
+ // window.requestAnimationFrame(render);
+//  }
+}, 1000/FPS);
+
+function update()
+{
+	updateAnimation(caseNumber);
+	if(roam == 0 && battle == 0)
+	{
+		transition();
+	}
+	if(roam == 0 && battle == 1)
+	{
+		transition = 1;
+		//startBattle();
+	}
+}
+
+function mouseClick(event)
+{
+	canvasX = event.pageX;
+	canvasY = event.pageY;
+	if(90<canvasX && canvasX < 146 && 10<canvasY && canvasY<110 && locationEvent == 'classroom')
+	{
+		// Find key in classroom event.
+		alertBox('You found the key!'+canvasX+" "+canvasY);
+		door = 1;
+		npc2.src = '';
+		subjective.innerText = "";
+	}
+}
+
+function updateMovement(evt)
+{
+// Flag to put variables back if we hit an edge of the board.
+        var flag = 0;
+		var restricted = 0;
+
+        // Get where the char was before key process.
+        oldCharX = posX;
+        oldCharY = posY;
+
+        switch (evt.keyCode) {
+
+		  // Ctrl
+        case 17:
+          if (posX == 210 && posY == 270 && locationEvent == 'classroom')
+		  {
+            // If at door, Fire event
+			if(door == 1)
+			{
+				alertBox('You walked out the door using the key.');
+				background.src = 'hallway.gif';
+				locationEvent = 'hallway';
+				posX = 150;
+				posY = 120;
+				npc1.src = 'cleaning_lady.gif';
+				npc1PosX = 150;
+				npc1PosY = 60;
+				subjective.innerText = "Talk to the friendly looking'ish cleaning lady.";
+			}
+			else
+			{
+				alertBox('You cant get out. The door is  locked. "HINT: Something sparkles"');
+				subjective.innerText = "Find the key.";
+				npc2.src = 'sparkles.gif';
+				npc2PosX = 85;
+				npc2PosY = 50;
+			}
+          }
+		  
+		  if(posX == 150 && posY == 90 && locationEvent == 'hallway')
+		  {
+			alertBox('Cleaning lady yells: "U DO CLEAN!, NOT ME!"');
+			roam = 0;
+			moving = 1;
+			units = 30;
+			caseNumber = 200;
+		  }
+          break;
+		
+          // Left arrow.
+        case 37:
+		  if(moving == 0)
+		  {
+		  moving = 1;
+		  units = 30;
+          caseNumber = 37;
+		  
+		  
+		  }
+          break;
+		  
+
+          // Right arrow.
+        case 39:
+		if(locationEvent == 'classroom')
+		{
+		  if(posX+30 == 60 && posY+30 < 80) {
+				flag = 1;
+				restricted = 1;
+			  }
+			  }
+		  if(moving == 0 && restricted == 0)
+		  {
+			moving = 1;
+			units = 30;
+			caseNumber = 39;
+		  }
+          break;
+
+          // Down arrow
+        case 40:
+		  if(moving == 0)
+		  {
+			moving = 1;
+			units = 30;
+			caseNumber = 40;
+		  }
+          break;
+
+          // Up arrow 
+        case 38:
+		if(moving == 0)
+		  {
+			moving = 1;
+			units = 30;
+			caseNumber = 38;
+		  }
+          break;
+
+        }
+
+        // If flag is set, the ship did not move.
+        // Put everything back the way it was.
+        
+		
+		
+      }
+
+function updateAnimation(caseNumbers)
+{
+	var flag = 0;
+	if(units == 30)
+	{
+		oldCharX = posX;
+        oldCharY = posY;
+	}
+	
+	if(units > 0)
+	{
+		//Left arrow
+		if(caseNumbers == 37)
+		{
+			units = units - 10;
+			posX = posX - 10
+			if(movePos == 0){cutPosX = 2200;}
+			if(movePos == 1){cutPosX = 2400;}
+			if(movePos == 2){cutPosX = 2600;}
+			movePos++;
+			if(movePos == 3)
+			{movePos = 0;}
+			if (posX < 0)
+			{
+				// If at edge, reset char position and set flag.
+				posX = 0;
+				flag = 1;
+			}
+			
+		}
+		
+		// Right arrow
+		if(caseNumbers == 39)
+		{
+			units = units - 10;
+			posX = posX + 10;
+			  cutPosX = 1400;
+			  if (posX > 270) {
+				// If at edge, reset char position and set flag.
+				posX = 270;
+				flag = 1;
+			  }
+			  
+		}
+		
+		//Down arrow
+		if(caseNumbers == 40)
+		{
+			units = units - 10;
+			posY = posY + 10;
+			cutPosX = 200;
+          if (posY > 270) {
+            // If at edge, reset ship position and set flag.
+            posY = 270;
+            flag = 1;
+          }
+		}
+		
+		//Up arrow
+		if(caseNumbers == 38)
+		{
+			units = units - 10;
+			posY = posY - 10;
+			cutPosX = 800;
+          if (posY < 0) {
+            // If at edge, reset ship position and set flag.
+            posY = 0;
+            flag = 1;
+          }
+		}
+		
+		//transition
+		if(caseNumbers == 200)
+		{
+			if(transition == 1)
+			{
+				units = units - 3;
+				transitionX = transitionX + 32;
+				context.clearRect ( 0 , 0 , canvas.width, canvas.height );
+				context.drawImage(transitionImage,transitionX,0,320,320);
+			}
+			else {
+				context.clearRect ( 0 , 0 , canvas.width, canvas.height );
+				transition = 0;
+				if(battle == 0)
+				{
+					battle = 1;
+				}
+				else {
+					battle = 0;
+				}
+			}
+		}
+	}	
+	if (flag)
+	{
+          posX = oldCharX;
+          posY = oldCharY;
+    }
+		
+	if(units == 0 && moving == 1)
+	{
+		moving = 0;
+		transition = 0;
+		if(caseNumbers == 37 || caseNumbers == 38 || caseNumbers == 39 || caseNumbers == 40)
+		{
+			footstep.play();
+		}
+		resetChar();
+	}
+	
+}	  
+	  
+function draw()
+{
+if(roam == 1)
+{
+context.clearRect ( 0 , 0 , canvas.width, canvas.height );
+context.drawImage(background,0,0,320,320);
+if(door == 1)
+{
+	context.drawImage(npc1, npc1PosX, npc1PosY, 50, 50);
+}
+context.drawImage(npc2, npc2PosX, npc2PosY, 50, 50);
+context.drawImage(base_image, cutPosX, cutPosY, cutWidthX, 300, posX, posY, 40, 60);
+}
+}
+
+function resetChar()
+{
+	if(charReset)
+	{
+		clearTimeout(charReset);
+	}
+	charReset = setTimeout(function(){cutPosX = 0;	cutWidthX = 200;},500);
+}
+
+function alertBox(str)
+{
+	alert(str);
+}
+
+function myCanvas() {
+	
+}
+</script>
+
+</body>
+</html>
