@@ -9,7 +9,7 @@
 <audio id="footstep" type="audio/mp3" src="footstepFloor.mp3">
 </audio>
 <div style="float:left;">
-<canvas id="myCanvas" onclick="myCanvas()" width="320" height="320"
+<canvas id="myCanvas" onclick="myCanvas()" width="1280" height="720"
 style="border:1px solid #000000;">
 Your browser does not support the HTML5 canvas tag.
 </canvas>
@@ -34,8 +34,8 @@ Subjective:<br>
 var canvas = document.getElementById('myCanvas'),
 context = canvas.getContext('2d');
 
-posX = 0;
-posY = 0;
+posX = 810;
+posY = 390;
 cutPosX = 0;
 cutWidthX = 200;
 cutPosY = 0;
@@ -48,7 +48,7 @@ var caseNumber = 0;
 var roam = 1;
 var battle = 0;
 var transition = 0;
-var transitionX = -320;
+var transitionX = -1280;
 var footstep = document.getElementById('footstep');
 var music = document.getElementById('music');
 var subjective = document.getElementById("subjective");
@@ -61,7 +61,7 @@ base_image = new Image();
 base_image.src = 'sprite.png';
 
 background = new Image();
-background.src = 'Background.gif';
+background.src = '../Level Design/ClassRoom.png';
 
 transitionImage = new Image();
 transitionImage.src = 'transitionImage.gif';
@@ -137,7 +137,7 @@ function updateMovement(evt)
 			if(door == 1)
 			{
 				alertBox('You walked out the door using the key.');
-				background.src = 'hallway.gif';
+				background.src = '../Level Design/HallWay.png';
 				locationEvent = 'hallway';
 				posX = 150;
 				posY = 120;
@@ -171,7 +171,7 @@ function updateMovement(evt)
 		  if(moving == 0)
 		  {
 		  moving = 1;
-		  units = 30;
+		  units = 60;
           caseNumber = 37;
 		  
 		  
@@ -183,7 +183,8 @@ function updateMovement(evt)
         case 39:
 		if(locationEvent == 'classroom')
 		{
-		  if(posX+30 == 60 && posY+30 < 80) {
+			//Don't go into trash can
+		  if(posX+30 == 120 && posY+30 < 80) {
 				flag = 1;
 				restricted = 1;
 			  }
@@ -191,7 +192,7 @@ function updateMovement(evt)
 		  if(moving == 0 && restricted == 0)
 		  {
 			moving = 1;
-			units = 30;
+			units = 60;
 			caseNumber = 39;
 		  }
           break;
@@ -201,17 +202,24 @@ function updateMovement(evt)
 		  if(moving == 0)
 		  {
 			moving = 1;
-			units = 30;
+			units = 60;
 			caseNumber = 40;
 		  }
           break;
 
           // Up arrow 
         case 38:
-		if(moving == 0)
+		if(locationEvent == 'classroom')
+		{
+		  if(posY-60 < 60) {
+				flag = 1;
+				restricted = 1;
+			  }
+			  }
+		if(moving == 0 && restricted == 0)
 		  {
 			moving = 1;
-			units = 30;
+			units = 60;
 			caseNumber = 38;
 		  }
           break;
@@ -228,7 +236,7 @@ function updateMovement(evt)
 function updateAnimation(caseNumbers)
 {
 	var flag = 0;
-	if(units == 30)
+	if(units == 60)
 	{
 		oldCharX = posX;
         oldCharY = posY;
@@ -239,7 +247,7 @@ function updateAnimation(caseNumbers)
 		//Left arrow
 		if(caseNumbers == 37)
 		{
-			if(units == 7.5 || units == 15 || units == 22.5 || units == 30)
+			if(units == 15 || units == 30 || units == 45 || units == 60)
 			{
 			if(moveSidePos == 0){cutPosX = 2200;}
 			if(moveSidePos == 1){cutPosX = 2400;}
@@ -249,8 +257,8 @@ function updateAnimation(caseNumbers)
 			if(moveSidePos == 4)
 			{moveSidePos = 0;}
 			}
-			units = units - 1.5;
-			posX = posX - 1.5;
+			units = units - 5;
+			posX = posX - 7.5;
 			
 			if (posX < 0)
 			{
@@ -258,60 +266,87 @@ function updateAnimation(caseNumbers)
 				posX = 0;
 				flag = 1;
 			}
+			if(!(flag))
+		  {
+			resetChar();
+		  }
 			
 		}
 		
 		// Right arrow
 		if(caseNumbers == 39)
 		{
-			units = units - 10;
-			posX = posX + 10;
-			  if(moveSidePos == 0){cutPosX = 1400;}
+			if(units == 15 || units == 30 || units == 45 || units == 60)
+			{
+			if(moveSidePos == 0){cutPosX = 1400;}
 			if(moveSidePos == 1){cutPosX = 1600;}
 			if(moveSidePos == 2){cutPosX = 1800;}
+			if(moveSidePos == 3){cutPosX = 1600;}
 			moveSidePos++;
-			if(moveSidePos == 3)
+			if(moveSidePos == 4)
 			{moveSidePos = 0;}
-			  if (posX > 270) {
+			}
+			units = units - 5;
+			posX = posX + 7.5;
+			
+			  if (posX > 1210) {
 				// If at edge, reset char position and set flag.
-				posX = 270;
+				posX = 1170;
 				flag = 1;
 			  }
+			  if(!(flag))
+		  {
+			resetChar();
+		  }
 			  
 		}
 		
 		//Down arrow
 		if(caseNumbers == 40)
 		{
-			units = units - 10;
-			posY = posY + 10;
+			units = units - 5;
+			posY = posY + 7.5;
+			if(units == 15 || units == 30 || units == 45 || units == 60)
+			{
 			if(movePos == 0){cutPosX = 200;}
 			if(movePos == 1){cutPosX = 400;}
 			movePos++;
 			if(movePos == 2)
 			{movePos = 0;}
-          if (posY > 270) {
+			}
+          if (posY > 615) {
             // If at edge, reset ship position and set flag.
-            posY = 270;
+            posY = 600;
             flag = 1;
           }
+		  if(!(flag))
+		  {
+			resetChar();
+		  }
 		}
 		
 		//Up arrow
 		if(caseNumbers == 38)
 		{
-			units = units - 10;
-			posY = posY - 10;
+			units = units - 5;
+			posY = posY - 7.5;
+			if(units == 15 || units == 30 || units == 45 || units == 60)
+			{
 			if(movePos == 0){cutPosX = 800;}
 			if(movePos == 1){cutPosX = 1000;}
 			movePos++;
 			if(movePos == 2)
 			{movePos = 0;}
+			}
           if (posY < 0) {
             // If at edge, reset ship position and set flag.
             posY = 0;
             flag = 1;
           }
+		  if(!(flag))
+		  {
+			resetChar();
+		  }
 		}
 		
 		//transition
@@ -320,9 +355,9 @@ function updateAnimation(caseNumbers)
 			if(transition == 1)
 			{
 				units = units - 3;
-				transitionX = transitionX + 32;
+				transitionX = transitionX + 128;
 				context.clearRect ( 0 , 0 , canvas.width, canvas.height );
-				context.drawImage(transitionImage,transitionX,0,320,320);
+				context.drawImage(transitionImage,transitionX,0,1280,720);
 			}
 			else {
 				context.clearRect ( 0 , 0 , canvas.width, canvas.height );
@@ -351,7 +386,6 @@ function updateAnimation(caseNumbers)
 		{
 			footstep.play();
 		}
-		resetChar();
 	}
 	
 }	  
@@ -361,13 +395,13 @@ function draw()
 if(roam == 1)
 {
 context.clearRect ( 0 , 0 , canvas.width, canvas.height );
-context.drawImage(background,0,0,320,320);
+context.drawImage(background,0,0,1280,720);
 if(door == 1)
 {
 	context.drawImage(npc1, npc1PosX, npc1PosY, 50, 50);
 }
 context.drawImage(npc2, npc2PosX, npc2PosY, 50, 50);
-context.drawImage(base_image, cutPosX, cutPosY, cutWidthX, 300, posX, posY, 40, 60);
+context.drawImage(base_image, cutPosX, cutPosY, cutWidthX, 300, posX, posY, 70, 105);
 }
 }
 
@@ -377,7 +411,7 @@ function resetChar()
 	{
 		clearTimeout(charReset);
 	}
-	charReset = setTimeout(function(){cutPosX = 0;	cutWidthX = 200;},500);
+	charReset = setTimeout(function(){cutPosX = 0;	cutWidthX = 200;},700);
 }
 
 function alertBox(str)
