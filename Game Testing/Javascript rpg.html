@@ -69,10 +69,14 @@ transitionImage.src = 'transitionImage.gif';
 npc1 = new Image();
 var npc1PosX;
 var npc1PosY;
+var npc1SizeX;
+var npc1SizeY;
 
 npc2 = new Image();
 var npc2PosX;
 var npc2PosY;
+var npc2SizeX;
+var npc2SizeY;
 
 music.volume = 0.1;
 
@@ -119,6 +123,9 @@ function mouseClick(event)
 
 function updateMovement(evt)
 {
+	if([37, 38, 39, 40].indexOf(evt.keyCode) > -1) {
+        evt.preventDefault();
+    }
 // Flag to put variables back if we hit an edge of the board.
         var flag = 0;
 		var restricted = 0;
@@ -131,7 +138,7 @@ function updateMovement(evt)
 
 		  // Ctrl
         case 17:
-          if (posX == 210 && posY == 270 && locationEvent == 'classroom')
+          if (posX == 0 && posY == 300 && locationEvent == 'classroom')
 		  {
             // If at door, Fire event
 			if(door == 1)
@@ -144,6 +151,8 @@ function updateMovement(evt)
 				npc1.src = 'cleaning_lady.gif';
 				npc1PosX = 150;
 				npc1PosY = 60;
+				npc1SizeX = 70;
+				npc1SizeY = 105;
 				subjective.innerText = "Talk to the friendly looking'ish cleaning lady.";
 			}
 			else
@@ -151,8 +160,10 @@ function updateMovement(evt)
 				alertBox('You cant get out. The door is  locked. "HINT: Something sparkles"');
 				subjective.innerText = "Find the key.";
 				npc2.src = 'sparkles.gif';
-				npc2PosX = 85;
-				npc2PosY = 50;
+				npc2PosX = 175;
+				npc2PosY = 100;
+				npc2SizeX = 20;
+				npc2PosY = 10;
 			}
           }
 		  
@@ -398,9 +409,9 @@ context.clearRect ( 0 , 0 , canvas.width, canvas.height );
 context.drawImage(background,0,0,1280,720);
 if(door == 1)
 {
-	context.drawImage(npc1, npc1PosX, npc1PosY, 50, 50);
+	context.drawImage(npc1, npc1PosX, npc1PosY, npc1SizeX, npc1SizeY);
 }
-context.drawImage(npc2, npc2PosX, npc2PosY, 50, 50);
+context.drawImage(npc2, npc2PosX, npc2PosY, npc2SizeX, npc2SizeY);
 context.drawImage(base_image, cutPosX, cutPosY, cutWidthX, 300, posX, posY, 70, 105);
 }
 }
