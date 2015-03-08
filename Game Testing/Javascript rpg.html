@@ -4,7 +4,7 @@
 </head>
 <body>
 
-<audio id="music" type="audio/mp3" src="Vince--A-Walk.mp3" autoplay loop>
+<audio id="music" type="audio/mp3" src="background1.mp3" autoplay>
 </audio>
 <audio id="footstep" type="audio/mp3" src="footstepFloor.mp3">
 </audio>
@@ -55,6 +55,9 @@ var subjective = document.getElementById("subjective");
 var objective = document.getElementById("objective");
 var moveSidePos = 0;
 var movePos = 0;
+var trackNumber = 1;
+
+
 
 
 base_image = new Image();
@@ -82,6 +85,7 @@ music.volume = 0.1;
 
 document.addEventListener('keydown', updateMovement);
 canvas.addEventListener('mousedown', mouseClick);
+music.addEventListener('ended', switchTrack);
 //window.addEventListener('load', render);
 var FPS = 30;
 setInterval(function() {
@@ -444,6 +448,20 @@ function alertBox(str)
 
 function myCanvas() {
 	
+}
+
+function switchTrack()
+{
+	trackNumber++;
+	if(trackNumber == 3)
+	{
+		trackNumber = 1;
+	}
+	if(battle == 0)
+	{
+		music.src = "background"+trackNumber+".mp3";
+		music.play();
+	}
 }
 </script>
 
