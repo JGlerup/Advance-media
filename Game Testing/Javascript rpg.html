@@ -181,6 +181,7 @@ function updateMovement(evt)
 		  if(posX == 510 && posY == 300 && locationEvent == 'hallway')
 		  {
 			alertBox('Cleaning lady yells: "U DO CLEAN!, NOT ME!"');
+			music.src = 'Battle-of-the-Bits.mp3';
 			roam = 0;
 			moving = 1;
 			units = 30;
@@ -400,12 +401,19 @@ function updateAnimation(caseNumbers)
           posY = oldCharY;
     }
 		
-	if(units == 0 && moving == 1)
+	if((units == 0 || units == 45) && moving == 1)
 	{
-		moving = 0;
-		transition = 0;
+		if(units == 0)
+		{
+			moving = 0;
+			transition = 0;
+		}
+		
+		
 		if(caseNumbers == 37 || caseNumbers == 38 || caseNumbers == 39 || caseNumbers == 40)
 		{
+			footstep.pause();
+			footstep.currentTime = 0;
 			footstep.play();
 		}
 	}
@@ -460,6 +468,9 @@ function switchTrack()
 	if(battle == 0)
 	{
 		music.src = "background"+trackNumber+".mp3";
+		music.play();
+	}
+	else {
 		music.play();
 	}
 }
