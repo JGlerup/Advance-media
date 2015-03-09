@@ -34,8 +34,8 @@ Subjective:<br>
 var canvas = document.getElementById('myCanvas'),
 context = canvas.getContext('2d');
 
-posX = 810;
-posY = 390;
+posX = 800;
+posY = 400;
 cutPosX = 0;
 cutWidthX = 200;
 cutPosY = 0;
@@ -56,12 +56,16 @@ var objective = document.getElementById("objective");
 var moveSidePos = 0;
 var movePos = 0;
 var trackNumber = 1;
+var whiteboardText;
 
 
 
 
 base_image = new Image();
 base_image.src = 'sprite.png';
+
+whity = new Image();
+whity.src = 'white.png';
 
 background = new Image();
 background.src = '../Level Design/ClassRoom.png';
@@ -177,7 +181,13 @@ function updateMovement(evt)
 				npc2SizeX = 20;
 				npc2PosY = 10;
 			}
-          }		  
+          }
+
+		  if (400 <= posX <= 720 && posY == 40 && locationEvent == 'classroom')
+		  {
+			whiteboardText = "Teacher is GAY!";
+		  }
+		  
 		  if(posX == 510 && posY == 300 && locationEvent == 'hallway')
 		  {
 			alertBox('Cleaning lady yells: "U DO CLEAN!, NOT ME!"');
@@ -194,7 +204,7 @@ function updateMovement(evt)
 		  if(moving == 0)
 		  {
 		  moving = 1;
-		  units = 60;
+		  units = 80;
           caseNumber = 37;
 		  
 		  
@@ -215,7 +225,7 @@ function updateMovement(evt)
 		  if(moving == 0 && restricted == 0)
 		  {
 			moving = 1;
-			units = 60;
+			units = 80;
 			caseNumber = 39;
 		  }
           break;
@@ -225,7 +235,7 @@ function updateMovement(evt)
 		  if(moving == 0)
 		  {
 			moving = 1;
-			units = 60;
+			units = 80;
 			caseNumber = 40;
 		  }
           break;
@@ -234,7 +244,7 @@ function updateMovement(evt)
         case 38:
 		if(locationEvent == 'classroom')
 		{
-		  if(posY-60 < 60) {
+		  if(posY-40 < 40) {
 				flag = 1;
 				restricted = 1;
 			  }
@@ -242,7 +252,7 @@ function updateMovement(evt)
 		if(moving == 0 && restricted == 0)
 		  {
 			moving = 1;
-			units = 60;
+			units = 80;
 			caseNumber = 38;
 		  }
           break;
@@ -259,7 +269,7 @@ function updateMovement(evt)
 function updateAnimation(caseNumbers)
 {
 	var flag = 0;
-	if(units == 60)
+	if(units == 80)
 	{
 		oldCharX = posX;
         oldCharY = posY;
@@ -272,7 +282,7 @@ function updateAnimation(caseNumbers)
 		{
 			if(roam == 1)
 			{
-				if(units == 15 || units == 30 || units == 45 || units == 60)
+				if(units == 20 || units == 40 || units == 60 || units == 80)
 				{
 				if(moveSidePos == 0){cutPosX = 2200;}
 				if(moveSidePos == 1){cutPosX = 2400;}
@@ -283,7 +293,7 @@ function updateAnimation(caseNumbers)
 				{moveSidePos = 0;}
 				}
 				units = units - 5;
-				posX = posX - 7.5;
+				posX = posX - 5;
 				
 				if (posX < 0)
 				{
@@ -303,7 +313,7 @@ function updateAnimation(caseNumbers)
 		{
 			if(roam == 1)
 			{
-				if(units == 15 || units == 30 || units == 45 || units == 60)
+				if(units == 20 || units == 40 || units == 60 || units == 80)
 				{
 				if(moveSidePos == 0){cutPosX = 1400;}
 				if(moveSidePos == 1){cutPosX = 1600;}
@@ -314,7 +324,7 @@ function updateAnimation(caseNumbers)
 				{moveSidePos = 0;}
 				}
 				units = units - 5;
-				posX = posX + 7.5;
+				posX = posX + 5;
 				
 				  if (posX > 1210) {
 					// If at edge, reset char position and set flag.
@@ -334,8 +344,8 @@ function updateAnimation(caseNumbers)
 			if(roam == 1)
 			{
 				units = units - 5;
-				posY = posY + 7.5;
-				if(units == 15 || units == 30 || units == 45 || units == 60)
+				posY = posY + 2.5;
+				if(units == 20 || units == 40 || units == 60 || units == 80)
 				{
 				if(movePos == 0){cutPosX = 200;}
 				if(movePos == 1){cutPosX = 400;}
@@ -361,8 +371,8 @@ function updateAnimation(caseNumbers)
 			if(roam == 1)
 			{
 				units = units - 5;
-				posY = posY - 7.5;
-				if(units == 15 || units == 30 || units == 45 || units == 60)
+				posY = posY - 2.5;
+				if(units == 20 || units == 40 || units == 60 || units == 80)
 				{
 				if(movePos == 0){cutPosX = 800;}
 				if(movePos == 1){cutPosX = 1000;}
@@ -401,7 +411,7 @@ function updateAnimation(caseNumbers)
           posY = oldCharY;
     }
 		
-	if((units == 0 || units == 45) && moving == 1)
+	if((units == 0 || units == 40) && moving == 1)
 	{
 		if(units == 0)
 		{
@@ -430,7 +440,20 @@ if(door == 1)
 {
 	context.drawImage(npc1, npc1PosX, npc1PosY, npc1SizeX, npc1SizeY);
 }
+if(whiteboardText)
+{
+	context.font="30px Verdana";
+	// Create gradient
+	var gradient=context.createLinearGradient(0,0,canvas.width,0);
+	gradient.addColorStop("0","magenta");
+	gradient.addColorStop("0.5","blue");
+	gradient.addColorStop("1.0","red");
+	// Fill with gradient
+	context.fillStyle=gradient;
+	context.fillText(whiteboardText,500,100);
+}
 context.drawImage(npc2, npc2PosX, npc2PosY, npc2SizeX, npc2SizeY);
+//context.drawImage(whity, cutPosX, cutPosY, cutWidthX, 300, posX, posY, 70, 105);
 context.drawImage(base_image, cutPosX, cutPosY, cutWidthX, 300, posX, posY, 70, 105);
 }
 if(battle == 1 && transition == 0)
@@ -461,7 +484,7 @@ function myCanvas() {
 function switchTrack()
 {
 	trackNumber++;
-	if(trackNumber == 3)
+	if(trackNumber == 5)
 	{
 		trackNumber = 1;
 	}
