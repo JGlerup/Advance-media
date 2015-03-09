@@ -3,14 +3,53 @@
 <head>
 	<title>The game!</title>
 	<meta charset="UTF-8">
-	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 	<link rel="stylesheet" type="text/css" href="style.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 	<script src="custom.js"></script>
 </head>
 <body>
+	<div class="modal fade" id="male_modal" tabindex="-1" role="dialog" aria-labelledby="male_modal_label" aria-hidden="true">
+		<div class="modal-dialog">
+    		<div class="modal-content">
+    			<div class="modal-header">
+    				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        			<h4 class="modal-title" id="male_modal_label">Pick Clothes</h4>
+      			</div>
+      			<div class="modal-body">
+      				<ul class="cloth_list">
+      					<li class="current" data-sprite="sprite-male-1"><img src="images/male1.png"></li>
+      					<li data-sprite="sprite-male-2"><img src="images/male2.png"></li>
+      				</ul>
+			    </div>
+    			<div class="modal-footer">
+        			<button type="button" class="btn btn-primary save" data-dismiss="modal">Save changes</button>
+      			</div>
+    		</div>
+  		</div>
+	</div>
+	<div class="modal fade" id="female_modal" tabindex="-1" role="dialog" aria-labelledby="female_modal_label" aria-hidden="true">
+		<div class="modal-dialog">
+    		<div class="modal-content">
+    			<div class="modal-header">
+    				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        			<h4 class="modal-title" id="female_modal_label">Pick Clothes</h4>
+      			</div>
+      			<div class="modal-body">
+      				<ul class="cloth_list">
+      					<li class="current" data-sprite="sprite-female-1"><img src="images/female.png"></li>
+      				</ul>
+			    </div>
+    			<div class="modal-footer">
+        			<button type="button" class="btn btn-primary save" data-dismiss="modal">Save changes</button>
+      			</div>
+    		</div>
+  		</div>
+	</div>
 	<header>
-		<h1>The Game</h1>
+		The Game
 	</header>
 	<section>
 		<article class="left">
@@ -29,29 +68,13 @@
 			</div>
 		</article>
 		<article class="right">
-			<div class="change_hair arrow prev"></div>
-			<div class="change_hair arrow next"></div>
-			<div class="change_beard arrow prev"></div>
-			<div class="change_beard arrow next"></div>
-			<div class="change_clothes arrow prev"></div>
-			<div class="change_clothes arrow next"></div>
-			<div id="hair">
-				<img src="images/hair1.png" class="hair curls active" data-lineup="1">
-				<img src="images/hair2.png" class="hair short" data-lineup="2">
-				<img src="images/hair3.png" class="hair pointy" data-lineup="3">
+			<div id="male_container" class="hidden">
+				<img src="images/male1.png">
+				<div class="picker pull-right" data-toggle="modal" data-target="#male_modal">Pick Clothes</div>
 			</div>
-			<div id="head">
-				<img src="images/face.png">
-			</div>
-			<div id="beard">
-				<img src="images/beard1.png" class="beard red active" data-lineup="1">
-				<img src="images/beard2.png" class="beard gray" data-lineup="2">
-				<img src="images/beard3.png" class="beard dark" data-lineup="3">
-			</div>
-			<div id="clothes">
-				<img src="images/shirt1.png" class="clothes active" data-lineup="1">
-				<img src="images/shirt2.png" class="clothes" data-lineup="2">
-				<img src="images/shirt3.png" class="clothes" data-lineup="3">
+			<div id="female_container" class="hidden">
+				<img src="images/female1.png">
+				<div class="picker pull-right" data-toggle="modal" data-target="#female_modal">Pick Clothes</div>
 			</div>
 		</article>
 	</section>

@@ -1,6 +1,6 @@
 body {
 	margin: 0;
-	padding: 0;
+	padding: 0 0 100px 0;
 	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 	font-size: 16px;
 	color: #303030;
@@ -14,6 +14,7 @@ header {
 	width: 900px;
 	height: 100px;
 	line-height: 100px;
+	font-size: 40px;
 	text-align: center;
 	background-color: #fff;
 	border-top-left-radius: 4px;
@@ -25,7 +26,7 @@ section {
 	position: relative;
 	margin: -1px auto 0;
 	padding: 10px;
-	width: 880px;
+	width: 900px;
 	background-color: #fff;
 	border-top: solid 5px #e1e1e1;
 	border-bottom-left-radius: 4px;
@@ -47,18 +48,34 @@ article {
 
 .left {
 	padding: 0 10px;
-	width: calc(35% - 20px);
+	width: 50%;
 }
 
 .left img {
-	max-width: 100%;
+	max-width: 150px;
 }
 
 .right {
 	position: relative;
 	padding: 0 10px;
-	width: calc(65% - 20px);
+	width: 50%;
 }
+
+#female_container,
+#male_container {
+	position: relative;
+	display: block;
+	text-align: center;
+}
+
+#female_container > img,
+#male_container > img {
+	display: block;
+	margin: 0 auto;
+	width: auto;
+	height: 600px;
+}
+
 
 .start-button {
 	position: absolute;
@@ -128,129 +145,43 @@ input {
 	transform: scale(1.2);
 }
 
-#hair img,
-#beard img,
-#clothes img {
-	display: none;
-}
-
-#head img,
-#clothes img {
-	width: 100%;
-}
-
-#hair img.active,
-#beard img.active,
-#clothes img.active {
-	display: block;
-}
-
-#hair {
-	position: absolute;
-	top: 35px;
-	left: 50%;
-	margin: 0 0 0 -61px;
-	width: 122px;
-	z-index: 2;
-}
-
-.curls {
-	margin: 0 0 0 1px;
-	width: 122px;
-}
-
-.short {
-	margin: 5px 0 0 -5px;
-	width: 130px;
-}
-
-.pointy {
-	margin: -20px 0 0 -10px;
-	width: 135px;
-}
-
-#head {
-	position: absolute;
-	top: 60px;
-	left: 50%;
-	margin: 0 0 0 -75px;
-	width: 150px;
-	z-index: 1;
-}
-
-#beard {
-	position: absolute;
-	top: 93px;
-	left: 50%;
-	margin: 0 0 0 -60px;
-	width: 120px;
-	z-index: 2;
-}
-
-.red {
-	margin: -1px 0 0 0;
-	width: 121px;
-}
-
-.gray {
-	margin: -57px 0 0 0;
-	width: 121px;
-}
-
-.dark {
-	margin: -5px 0 0 0;
-	width: 121px;
-}
-
-#clothes {
-	position: absolute;
-	top: 220px;
-	left: 50%;
-	margin: 0 0 0 -160px;
-	width: 320px;
-	z-index: 2;
-}
-
-.arrow {
-	display: block;
-	position: absolute;
+.cloth_list {
+	margin: 0;
 	padding: 0;
-	width: 30px;
-	height: 30px;
-	line-height: 30px;
-	font-family: 'FontAwesome';
-	color: #555;
-	text-align: center;
-	z-index: 3;
+	list-style: none;
+}
+
+.cloth_list:after {
+	display: block;
+	content: '';
+	clear: both;
+}
+
+.cloth_list > li {
+	padding: 15px;
+	width: 33.33333333%;
+	float: left;
+}
+
+.cloth_list > li.current {
+	border: solid 5px #2ecc71;
+	border-radius: 5px;
+}
+
+.cloth_list > li:hover > img {
+	-moz-transform: scale(1.2);
+	-webkit-transform: scale(1.2);
+	-o-transform: scale(1.2);
+	-ms-transform: scale(1.2);
+	transform: scale(1.2);
+}
+
+.cloth_list > li > img {
+	max-width: 100%;
+	-webkit-transition: all 0.5s ease-in-out;
+	-moz-transition: all 0.5s ease-in-out;
+	-ms-transition: all 0.5s ease-in-out;
+	-o-transition: all 0.5s ease-in-out;
+	transition: all 0.5s ease-in-out;
 	cursor: pointer;
-}
-
-.next {
-	right: 20px;
-	
-}
-
-.next:after {
-	content:"\f054";
-}
-
-.prev {
-	left: 20px;
-	content: '\f053';
-}
-
-.prev:after {
-	content: '\f053';
-}
-
-.change_hair {
-	top: 50px;
-}
-
-.change_beard {
-	top: 140px;
-}
-
-.change_clothes {
-	top: 230px;
 }
