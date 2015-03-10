@@ -34,8 +34,8 @@ Subjective:<br>
 var canvas = document.getElementById('myCanvas'),
 context = canvas.getContext('2d');
 
-posX = 800;
-posY = 400;
+posX = 720;
+posY = 360;
 cutPosX = 0;
 cutWidthX = 200;
 cutPosY = 0;
@@ -57,7 +57,10 @@ var moveSidePos = 0;
 var movePos = 0;
 var trackNumber = 1;
 var whiteboardText;
-
+var yourTurn = 0;
+var randomText;
+var randomMessages = Array("BIP BIP BUB","~You can't touch this. DAA-DA-DA-DA~","PC shows BCoD. RIP PC.","Your PC got a virus. Good Job!","FORMAT C:");
+var timeRandomText;
 
 
 
@@ -85,6 +88,21 @@ var npc2PosY;
 var npc2SizeX;
 var npc2SizeY;
 
+battleChar1 = new Image();
+var battleChar1PosX;
+var battleChar1PosY;
+var battleChar1SizeX;
+var battleChar1SizeY;
+var battleChar1cutPosX;
+var battleChar1cutWidthX;
+var battleChar1cutPosY;
+
+battleChar2 = new Image();
+var battleChar2PosX;
+var battleChar2PosY;
+var battleChar2SizeX;
+var battleChar2SizeY;
+
 music.volume = 0.1;
 
 document.addEventListener('keydown', updateMovement);
@@ -106,17 +124,43 @@ function update()
 	if(roam == 0 && battle == 0)
 	{
 		transition = 1;
-		if(transitionX == 0)
+		if(transitionX == 0 && locationEvent == "hallway")
 		{
 			transition = 0;
 			transitionX = -1280;
-			background.src = "battle.jpg";
+			background.src = "hallway_fight.png";
 			battle = 1;
+			units = 60;
+			
+			battleChar1.src = 'sprite.png';
+			battleChar1PosX = -200;
+			battleChar1PosY = 470;
+			battleChar1SizeX = 300;
+			battleChar1SizeY = 450;
+			battleChar1cutPosX = 1200;
+			battleChar1cutWidthX = 200;
+			battleChar1cutPosY = 0;
+			
+			battleChar2.src = 'cleaning_lady.gif';
+			battleChar2PosX = 1280;
+			battleChar2PosY = 100;
+			battleChar2SizeX = 300;
+			battleChar2SizeY = 450;
 		}
 	}
 	if(roam == 0 && battle == 1)
 	{
-		
+		if(units)
+		{
+			//console.log(battleChar1PosX);
+			units = units - 1.5;
+			battleChar1PosX = battleChar1PosX + 8;
+			battleChar2PosX = battleChar2PosX - 8;
+			if(units == 1.5)
+			{
+				yourTurn = 1;
+			}
+		}
 		//startBattle();
 	}
 	updateAnimation(caseNumber);
@@ -154,7 +198,9 @@ function updateMovement(evt)
 
 		  // Ctrl
         case 17:
-          if (posX == 0 && posY == 300 && locationEvent == 'classroom')
+		if(roam)
+		{
+          if (posX == 0 && posY == 400 && locationEvent == 'classroom')
 		  {
             // If at door, Fire event
 			if(door == 1)
@@ -165,8 +211,8 @@ function updateMovement(evt)
 				posX = 150;
 				posY = 120;
 				npc1.src = 'cleaning_lady.gif';
-				npc1PosX = 590;
-				npc1PosY = 300;
+				npc1PosX = 620;
+				npc1PosY = 320;
 				npc1SizeX = 70;
 				npc1SizeY = 105;
 				subjective.innerText = "Talk to the friendly looking'ish cleaning lady.";
@@ -188,7 +234,12 @@ function updateMovement(evt)
 			whiteboardText = "Teacher is GAY!";
 		  }
 		  
-		  if(posX == 510 && posY == 300 && locationEvent == 'hallway')
+		  if(posX == 720 && posY == 360 && locationEvent == 'classroom')
+		  {
+			randomPCMessage();
+		  }
+		  
+		  if(posX == 550 && posY == 320 && locationEvent == 'hallway')
 		  {
 			alertBox('Cleaning lady yells: "U DO CLEAN!, NOT ME!"');
 			music.src = 'Hopeku___Blue_brass.mp3';
@@ -197,54 +248,98 @@ function updateMovement(evt)
 			units = 30;
 			caseNumber = 200;
 		  }
+		}
+		if(battle)
+		{
+			
+		}
+		  
+		  
           break;
 		
           // Left arrow.
         case 37:
-		  if(moving == 0)
+		if(roam)
+		{
+			if(locationEvent == 'classroom')
+			{
+				//Restricted areas in classroom
+			    if((posX-80 == 720 && posY == 200) || (posX-80 == 960 && posY == 320) || (posX-80 == 480 && posY == 400) || (posX == 0))
+			    {
+					flag = 1;
+					restricted = 1;
+				}
+			}
+		  if(!moving && !restricted)
 		  {
 		  moving = 1;
 		  units = 80;
           caseNumber = 37;
-		  
-		  
 		  }
+		  
+		}
+		if(battle)
+		{
+			
+		}
           break;
 		  
 
           // Right arrow.
         case 39:
-		if(locationEvent == 'classroom')
+		if(roam)
 		{
-			//Don't go into trash can
-		  if(posX+30 == 120 && posY+30 < 80) {
-				flag = 1;
-				restricted = 1;
-			  }
-			  }
-		  if(moving == 0 && restricted == 0)
+			if(locationEvent == 'classroom')
+			{
+				//Restricted areas in classroom
+			    if((posX+80 == 480 && posY == 200) || (posX+80 == 720 && posY == 320) || (posX+80 == 240 && posY == 400) || (posX+80 == 1280))
+			    {
+					flag = 1;
+					restricted = 1;
+				}
+			}
+		  if(!moving && !restricted)
 		  {
 			moving = 1;
 			units = 80;
 			caseNumber = 39;
 		  }
+		}
           break;
 
           // Down arrow
         case 40:
-		  if(moving == 0)
+		if(roam)
+		{
+			if(locationEvent == 'classroom')
+			{
+				//Restricted areas in classroom
+			    if((480 <= posX && posX <= 720 && posY+40 == 200) || (720 <= posX && posX <= 960 && posY+40 == 320) || (240 <= posX && posX <= 480 && posY+40 == 400) || (posY == 600))
+			    {
+					flag = 1;
+					restricted = 1;
+				}
+			}
+		  if(!moving && !restricted)
 		  {
 			moving = 1;
 			units = 80;
 			caseNumber = 40;
 		  }
+		}
+		if(battle)
+		{
+			
+		}
           break;
 
           // Up arrow 
         case 38:
+		if(roam)
+		{
 		if(locationEvent == 'classroom')
 		{
-		  if(posY-40 < 40) {
+		  if((480 <= posX && posX <= 720 && posY-40 == 200) || (720 <= posX && posX <= 960 && posY-40 == 320) || (240 <= posX && posX <= 480 && posY-40 == 400) || (posY-40 < 40)) {
 				flag = 1;
 				restricted = 1;
 			  }
@@ -255,6 +350,11 @@ function updateMovement(evt)
 			units = 80;
 			caseNumber = 38;
 		  }
+		}
+		if(battle && yourTurn)
+		{
+			
+		}
           break;
 
         }
@@ -440,11 +540,11 @@ if(door == 1)
 {
 	context.drawImage(npc1, npc1PosX, npc1PosY, npc1SizeX, npc1SizeY);
 }
-if(whiteboardText)
+if(whiteboardText && locationEvent == 'classroom')
 {
 	context.font="30px Verdana";
 	// Create gradient
-	var gradient=context.createLinearGradient(0,0,canvas.width,0);
+	var gradient=context.createLinearGradient(400,0,720,0);
 	gradient.addColorStop("0","magenta");
 	gradient.addColorStop("0.5","blue");
 	gradient.addColorStop("1.0","red");
@@ -454,12 +554,28 @@ if(whiteboardText)
 }
 context.drawImage(npc2, npc2PosX, npc2PosY, npc2SizeX, npc2SizeY);
 //context.drawImage(whity, cutPosX, cutPosY, cutWidthX, 300, posX, posY, 70, 105);
+if(randomText)
+{
+	drawBubble(context, 690,330,350, 30, 20);
+	//context.drawImage(whity, 0, 0, 200, 200, 690, 330, 370, 30);
+	context.font="20px Comic-Sans";
+	// Create gradient
+	var gradient=context.createLinearGradient(700,0,800,0);
+	gradient.addColorStop("0","green");
+	gradient.addColorStop("0.5","green");
+	gradient.addColorStop("1.0","green");
+	// Fill with gradient
+	context.fillStyle=gradient;
+	context.fillText(randomText,700,350);
+}
 context.drawImage(base_image, cutPosX, cutPosY, cutWidthX, 300, posX, posY, 70, 105);
 }
 if(battle == 1 && transition == 0)
 {
 	context.clearRect ( 0 , 0 , canvas.width, canvas.height );
 	context.drawImage(background,0,0,1280,720);
+	context.drawImage(battleChar1, battleChar1cutPosX, battleChar1cutPosY, cutWidthX, 300, battleChar1PosX, battleChar1PosY, battleChar1SizeX, battleChar1SizeY);
+	context.drawImage(battleChar2, 0, 0, cutWidthX, 300, battleChar2PosX, battleChar2PosY, battleChar2SizeX, battleChar2SizeY);
 }
 }
 
@@ -496,6 +612,36 @@ function switchTrack()
 	else {
 		music.play();
 	}
+}
+
+function randomPCMessage()
+{
+	randomText = randomMessages[Math.floor(Math.random()*randomMessages.length)];
+	clearTimeout(timeRandomText);
+	timeRandomText = setTimeout(function(){randomText = null;}, 2000);
+}
+
+function drawBubble(ctx, x, y, w, h, radius)
+{
+  var r = x + w;
+  var b = y + h;
+  ctx.beginPath();
+  ctx.strokeStyle="black";
+  ctx.lineWidth="2";
+  ctx.moveTo(x+radius, y);
+  ctx.lineTo(x+radius/2, y-10);
+  ctx.lineTo(x+radius * 2, y);
+  ctx.lineTo(r-radius, y);
+  ctx.quadraticCurveTo(r, y, r, y+radius);
+  ctx.lineTo(r, y+h-radius);
+  ctx.quadraticCurveTo(r, b, r-radius, b);
+  ctx.lineTo(x+radius, b);
+  ctx.quadraticCurveTo(x, b, x, b-radius);
+  ctx.lineTo(x, y+radius);
+  ctx.quadraticCurveTo(x, y, x+radius, y);
+  ctx.stroke();
+  ctx.fillStyle="white";
+  ctx.fill()
 }
 </script>
 
