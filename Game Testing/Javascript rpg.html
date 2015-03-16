@@ -62,8 +62,6 @@ var randomText;
 var randomMessages = Array("BIP BIP BUB","~You can't touch this. DAA-DA-DA-DA~","PC shows BCoD. RIP PC.","Your PC got a virus. Good Job!","FORMAT C:");
 var timeRandomText;
 
-
-
 base_image = new Image();
 base_image.src = 'sprite.png';
 
@@ -103,7 +101,7 @@ var battleChar2PosY;
 var battleChar2SizeX;
 var battleChar2SizeY;
 
-music.volume = 0.1;
+music.volume = 0.0; // VOLUME 0.1
 
 document.addEventListener('keydown', updateMovement);
 canvas.addEventListener('mousedown', mouseClick);
@@ -200,54 +198,59 @@ function updateMovement(evt)
         case 17:
 		if(roam)
 		{
-          if (posX == 0 && posY == 400 && locationEvent == 'classroom')
-		  {
-            // If at door, Fire event
-			if(door == 1)
+			if(locationEvent == 'classroom')
 			{
-				alertBox('You walked out the door using the key.');
-				background.src = '../Level Design/HallWay.png';
-				locationEvent = 'hallway';
-				posX = 150;
-				posY = 120;
-				npc1.src = 'cleaning_lady.gif';
-				npc1PosX = 620;
-				npc1PosY = 320;
-				npc1SizeX = 70;
-				npc1SizeY = 105;
-				subjective.innerText = "Talk to the friendly looking'ish cleaning lady.";
-			}
-			else
-			{
-				alertBox('You cant get out. The door is  locked. "HINT: Something sparkles"');
-				subjective.innerText = "Find the key.";
-				npc2.src = 'sparkles.gif';
-				npc2PosX = 175;
-				npc2PosY = 100;
-				npc2SizeX = 20;
-				npc2PosY = 10;
-			}
-          }
+				if (posX == 0 && posY == 400)
+				{
+					// If at door, Fire event
+					if(door == 1)
+					{
+						alertBox('You walked out the door using the key.');
+						background.src = '../Level Design/HallWay.png';
+						locationEvent = 'hallway';
+						posX = 1200;
+						posY = 400;
+						npc1.src = 'cleaning_lady.gif';
+						npc1PosX = 640;
+						npc1PosY = 360;
+						npc1SizeX = 70;
+						npc1SizeY = 105;
+						subjective.innerText = "Talk to the friendly looking'ish cleaning lady.";
+					}
+					else
+					{
+						alertBox('You cant get out. The door is  locked. "HINT: Something sparkles"');
+						subjective.innerText = "Find the key.";
+						npc2.src = 'sparkles.gif';
+						npc2PosX = 175;
+						npc2PosY = 100;
+						npc2SizeX = 20;
+						npc2PosY = 10;
+					}
+				}
 
-		  if (400 <= posX <= 720 && posY == 40 && locationEvent == 'classroom')
-		  {
-			whiteboardText = "Teacher is GAY!";
-		  }
-		  
-		  if(posX == 720 && posY == 360 && locationEvent == 'classroom')
-		  {
-			randomPCMessage();
-		  }
-		  
-		  if(posX == 550 && posY == 320 && locationEvent == 'hallway')
-		  {
-			alertBox('Cleaning lady yells: "U DO CLEAN!, NOT ME!"');
-			music.src = 'Hopeku___Blue_brass.mp3';
-			roam = 0;
-			moving = 1;
-			units = 30;
-			caseNumber = 200;
-		  }
+				if (400 <= posX <= 720 && posY == 40)
+				{
+					whiteboardText = "Dickbutt";
+				}
+				  
+				if(posX == 720 && posY == 360)
+				{
+					randomPCMessage();
+				}
+			}
+			if(locationEvent == 'hallway')
+			{
+				if((posX == 640 && posY == 320) || (posX == 640 && posY == 400) || (posX == 560 && posY == 360) || (posX == 720 && posY == 360))
+				{
+					alertBox('Cleaning lady yells: "U DO CLEAN!, NOT ME!"');
+					music.src = 'Hopeku___Blue_brass.mp3';
+					roam = 0;
+					moving = 1;
+					units = 30;
+					caseNumber = 200;
+				}
+			}
 		}
 		if(battle)
 		{
@@ -265,6 +268,15 @@ function updateMovement(evt)
 			{
 				//Restricted areas in classroom
 			    if((posX-80 == 720 && posY == 200) || (posX-80 == 960 && posY == 320) || (posX-80 == 480 && posY == 400) || (posX == 0))
+			    {
+					flag = 1;
+					restricted = 1;
+				}
+			}
+			if(locationEvent == 'hallway')
+			{
+				//Restricted areas in hallway
+			    if((posX-80 == 640 && posY == 360) || (posX == 0))
 			    {
 					flag = 1;
 					restricted = 1;
@@ -298,6 +310,15 @@ function updateMovement(evt)
 					restricted = 1;
 				}
 			}
+			if(locationEvent == 'hallway')
+			{
+				//Restricted areas in classroom
+			    if((posX+80 == 640 && posY == 360) || (posX+80 == 1280))
+			    {
+					flag = 1;
+					restricted = 1;
+				}
+			}
 		  if(!moving && !restricted)
 		  {
 			moving = 1;
@@ -315,6 +336,15 @@ function updateMovement(evt)
 			{
 				//Restricted areas in classroom
 			    if((480 <= posX && posX <= 720 && posY+40 == 200) || (720 <= posX && posX <= 960 && posY+40 == 320) || (240 <= posX && posX <= 480 && posY+40 == 400) || (posY == 600))
+			    {
+					flag = 1;
+					restricted = 1;
+				}
+			}
+			if(locationEvent == 'hallway')
+			{
+				//Restricted areas in classroom
+			    if((posX == 640 && posY+40 == 360) || (posY == 600))
 			    {
 					flag = 1;
 					restricted = 1;
@@ -339,11 +369,19 @@ function updateMovement(evt)
 		{
 		if(locationEvent == 'classroom')
 		{
-		  if((480 <= posX && posX <= 720 && posY-40 == 200) || (720 <= posX && posX <= 960 && posY-40 == 320) || (240 <= posX && posX <= 480 && posY-40 == 400) || (posY-40 < 40)) {
+			if((480 <= posX && posX <= 720 && posY-40 == 200) || (720 <= posX && posX <= 960 && posY-40 == 320) || (240 <= posX && posX <= 480 && posY-40 == 400) || (posY-40 < 40)) {
+				flag = 1;
+				restricted = 1;
+			}
+			
+		}
+		if(locationEvent == 'hallway')
+		{	  
+			  if((640 == posX && posY-40 == 360) || (posY-40 < 40)) {
 				flag = 1;
 				restricted = 1;
 			  }
-			  }
+		}
 		if(moving == 0 && restricted == 0)
 		  {
 			moving = 1;
