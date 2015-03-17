@@ -47,8 +47,10 @@ var units = 0;
 var caseNumber = 0;
 var roam = 1;
 var battle = 0;
-var transition = 0;
-var transitionX = -1280;
+var transitionIntro = 0;
+var transitionIntroX = -1280;
+var transitionOutro = 0;
+var transitionOutroX = -1280;
 var footstep = document.getElementById('footstep');
 var music = document.getElementById('music');
 var subjective = document.getElementById("subjective");
@@ -67,6 +69,8 @@ var yourTurn = 0;
 var showHealthBars;
 var opponentHealth;
 var myHealth;
+var beginBattle;
+var endBattle;
 
 base_image = new Image();
 base_image.src = 'sprite.png';
@@ -77,8 +81,11 @@ whity.src = 'white.png';
 background = new Image();
 background.src = '../Level Design/ClassRoom.png';
 
-transitionImage = new Image();
-transitionImage.src = 'transitionImage.gif';
+transitionIntroImage = new Image();
+transitionIntroImage.src = 'transitionIntroImage.gif';
+
+transitionOutroImage = new Image();
+transitionOutroImage.src = 'transitionIntroImage.gif';
 
 npc1 = new Image();
 var npc1PosX;
@@ -107,7 +114,7 @@ var battleChar2PosY;
 var battleChar2SizeX;
 var battleChar2SizeY;
 
-music.volume = 0.1; // VOLUME 0.1
+music.volume = 0.0; // VOLUME 0.1
 
 document.addEventListener('keydown', updateMovement);
 canvas.addEventListener('mousedown', mouseClick);
@@ -125,18 +132,37 @@ setInterval(function() {
 
 function update()
 {
-	if(roam == 0 && battle == 0)
+	if(!roam && !battle)
 	{
-		transition = 1;
-		if(transitionX == 0 && locationEvent == "hallway")
+		if(beginBattle)
+		{
+			transitionIntro = 1;
+		}
+		
+		if(endBattle)
+		{
+			transitionOutro = 1;
+		}
+		
+		if(!transitionIntroX && locationEvent == "hallway" && beginBattle)
 		{
 			startBattle("hallway_fight.png",'cleaning_lady.gif',50);
 		}
+		if(!transitionOutroX && locationEvent == "hallway" && !beginBattle)
+		{
+			//startBattle("hallway_fight.png",'cleaning_lady.gif',50);
+			transitionOutro = 0;
+			transitionOutroX = -1280;
+			background.src = locationEvent+".png";
+			battle = 0;
+			units = 60;
+		}
 	}
 	
-	//Move into battle position. When almost done show health.
-	if(roam == 0 && battle == 1)
+	//In battle
+	if(!roam && battle)
 	{
+		//Set chars in position.
 		if(units)
 		{
 			//console.log(battleChar1PosX);
@@ -148,9 +174,28 @@ function update()
 				yourTurn = 1;
 			}
 		}
+		
+		if(!opponentHealth && endBattle)
+		{
+			returnFromBattle();
+		}
 	}
 	updateAnimation(caseNumber);
 	
+}
+
+function returnFromBattle()
+{
+	battle = 0;
+	battleChar1 = null;
+	battleChar2 = null;
+	beginBattle = 0;
+	caseNumber = 200;
+	moving = 1;
+	units = 30;
+	//battleMusic(); skal ændres til roam music
+	alertBox('Cleaning lady yells: "ARHH NOW I DO ALL CLEAN... ;("');
+	roam = 1;
 }
 
 function mouseClick(event)
@@ -238,6 +283,7 @@ function updateMovement(evt)
 					moving = 1;
 					units = 30;
 					caseNumber = 200;
+					beginBattle = 1;
 				}
 			}
 		}
@@ -523,16 +569,23 @@ function updateAnimation(caseNumbers)
 			}
 		}
 		
-		//transition
+		//transitionIntro
 		if(caseNumbers == 200)
 		{
-			if(transition)
+			if(transitionIntro)
 			{
 				units = units - 1.5;
-				transitionX = transitionX + 64;
+				transitionIntroX = transitionIntroX + 64;
 				context.clearRect ( 0 , 0 , canvas.width, canvas.height );
-				context.drawImage(transitionImage,transitionX,0,1280,720);
+				context.drawImage(transitionIntroImage,transitionIntroX,0,1280,720);
 				
+			}
+			if(transitionOutro)
+			{
+				units = units - 1.5;
+				transitionOutroX = transitionOutroX + 64;
+				context.clearRect ( 0 , 0 , canvas.width, canvas.height );
+				context.drawImage(transitionOutroImage,transitionOutroX,0,1280,720);
 			}
 		}
 	}	
@@ -547,7 +600,8 @@ function updateAnimation(caseNumbers)
 		if(units == 0)
 		{
 			moving = 0;
-			transition = 0;
+			transitionIntro = 0;
+			transitionOutro = 0;
 		}
 		
 		
@@ -601,7 +655,7 @@ if(randomText)
 }
 context.drawImage(base_image, cutPosX, cutPosY, cutWidthX, 300, posX, posY, 70, 105);
 }
-if(battle == 1 && transition == 0)
+if(battle && !transitionIntro)
 {
 	context.clearRect ( 0 , 0 , canvas.width, canvas.height );
 	context.drawImage(background,0,0,1280,720);
@@ -618,8 +672,8 @@ if(battle == 1 && transition == 0)
 
 function startBattle(place,opponent,healthPoints)
 {
-	transition = 0;
-	transitionX = -1280;
+	transitionIntro = 0;
+	transitionIntroX = -1280;
 	background.src = place;
 	battle = 1;
 	units = 60;
