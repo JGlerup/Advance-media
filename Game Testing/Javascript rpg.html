@@ -240,8 +240,8 @@ function updateMovement(evt)
 					if(door == 1)
 					{
 						alertBox('You walked out the door using the key.');
-						background.src = '../Level Design/HallWay.png';
 						locationEvent = 'hallway';
+						background.src = '../Level Design/'+locationEvent+'.png';
 						posX = 1200;
 						posY = 400;
 						npc1.src = 'cleaning_lady.gif';
