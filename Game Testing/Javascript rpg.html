@@ -85,7 +85,7 @@ transitionIntroImage = new Image();
 transitionIntroImage.src = 'transitionIntroImage.gif';
 
 transitionOutroImage = new Image();
-transitionOutroImage.src = 'transitionIntroImage.gif';
+transitionOutroImage.src = 'transitionOutroImage.gif';
 
 npc1 = new Image();
 var npc1PosX;
@@ -156,6 +156,7 @@ function update()
 			background.src = "../Level Design/"+locationEvent+".png";
 			roam = 1;
 			units = 60;
+			endBattle = 0;
 		}
 	}
 	
@@ -187,8 +188,8 @@ function update()
 function returnFromBattle()
 {
 	battle = 0;
-	battleChar1 = null;
-	battleChar2 = null;
+	battleChar1 = new Image();
+	battleChar2 = new Image();
 	beginBattle = 0;
 	endBattle = 1;
 	caseNumber = 200;
