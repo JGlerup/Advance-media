@@ -148,13 +148,13 @@ function update()
 		{
 			startBattle("hallway_fight.png",'cleaning_lady.gif',50);
 		}
-		if(!transitionOutroX && locationEvent == "hallway" && !beginBattle)
+		if(!transitionOutroX && locationEvent == "hallway" && endBattle)
 		{
 			//startBattle("hallway_fight.png",'cleaning_lady.gif',50);
 			transitionOutro = 0;
 			transitionOutroX = -1280;
-			background.src = locationEvent+".png";
-			battle = 0;
+			background.src = "../Level Design/"+locationEvent+".png";
+			roam = 1;
 			units = 60;
 		}
 	}
@@ -190,12 +190,12 @@ function returnFromBattle()
 	battleChar1 = null;
 	battleChar2 = null;
 	beginBattle = 0;
+	endBattle = 1;
 	caseNumber = 200;
 	moving = 1;
 	units = 30;
 	//battleMusic(); skal ændres til roam music
 	alertBox('Cleaning lady yells: "ARHH NOW I DO ALL CLEAN... ;("');
-	roam = 1;
 }
 
 function mouseClick(event)
@@ -427,6 +427,11 @@ function updateMovement(evt)
 		if(battle && yourTurn)
 		{
 			opponentHealth-=10;
+			if(opponentHealth <= 0)
+			{
+				endBattle = 1;
+				beginBattle = 0;
+			}
 		}
           break;
 
