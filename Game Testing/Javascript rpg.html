@@ -65,7 +65,7 @@ var timeRandomText;
 
 //Battle info
 var playerHealth = 100;
-var yourTurn = 0;
+var yourTurn = 1;
 var showHealthBars;
 var opponentHealth;
 var myHealth;
@@ -124,7 +124,7 @@ var battleChar2PosY;
 var battleChar2SizeX;
 var battleChar2SizeY;
 
-music.volume = 0.1; // VOLUME 0.1
+music.volume = 0.0; // VOLUME 0.1
 
 document.addEventListener('keydown', updateMovement);
 canvas.addEventListener('mousedown', mouseClick);
@@ -211,8 +211,9 @@ function returnFromBattle()
 	caseNumber = 200;
 	moving = 1;
 	units = 30;
-	//battleMusic(); skal ændres til roam music
-	alertBox('Cleaning lady yells: "ARHH NOW I DO ALL CLEAN... ;("');
+	switchTrack();
+	doOpponentAttack = 0;
+	alertBox('Cleaning lady yells: "ARHH NOW I DO ALL CLEAN. ;("');
 }
 
 function mouseClick(event)
@@ -478,7 +479,7 @@ function updateAnimation(caseNumbers)
         oldCharY = posY;
 	}
 	
-	if(units > 0 || combatUnits > 0) // HER SKAL LAVES EN ÆNDRING. TJEK GØR AT MAN BLIVER VED MED AT BEVÆGE SIG!
+	if(units > 0 || combatUnits > 0)
 	{
 		//Left arrow
 		if(caseNumbers == 37)
@@ -595,14 +596,14 @@ function updateAnimation(caseNumbers)
 			}
 			if(battle)
 			{
-			alert('walla2');
+				//alert('walla2');
 				//Battle animation
 				combatUnits = combatUnits - 5;
 				gooPosX = gooPosX + 4;
 				gooPosY = gooPosY - 2;
 				if(combatUnits <= 0)
 				{
-				alert('walla');
+					//alert('walla');
 					gooAttack = 0;
 					gooPosX = 300;
 					gooPosY = 300;
