@@ -75,6 +75,9 @@ var gooAttack;
 var combatUnits;
 var gooPosX = 300;
 var gooPosY = 300;
+var doOpponentAttack;
+var opponentAttackPosX;
+var opponentAttackPosY;
 
 base_image = new Image();
 base_image.src = 'sprite.png';
@@ -164,6 +167,7 @@ function update()
 			roam = 1;
 			units = 60;
 			endBattle = 0;
+			combatUnits = 0;
 		}
 	}
 	
@@ -183,9 +187,14 @@ function update()
 			}
 		}
 		
-		if(!opponentHealth && endBattle)
+		if(!yourTurn && !doOpponentAttack)
 		{
-			returnFromBattle();
+			setTimeout(opponentAttack(), 1000);
+		}
+		
+		if((opponentHealth <=0) && endBattle)
+		{
+			setTimeout(returnFromBattle(),1000);
 		}
 	}
 	updateAnimation(caseNumber);
@@ -434,6 +443,7 @@ function updateMovement(evt)
 		}
 		if(battle && yourTurn)
 		{
+			yourTurn = 0;
 			opponentHealth-=gooAttackMethod();
 			if(opponentHealth <= 0)
 			{
@@ -468,7 +478,7 @@ function updateAnimation(caseNumbers)
         oldCharY = posY;
 	}
 	
-	if(units > 0 || combatUnits > 0)
+	if(units > 0 || combatUnits > 0) // HER SKAL LAVES EN ÆNDRING. TJEK GØR AT MAN BLIVER VED MED AT BEVÆGE SIG!
 	{
 		//Left arrow
 		if(caseNumbers == 37)
@@ -578,23 +588,24 @@ function updateAnimation(caseNumbers)
 				posY = 0;
 				flag = 1;
 			  }
-			  if(!(flag))
+			  if(!flag)
 			  {
 				resetChar();
 			  }
 			}
 			if(battle)
 			{
+			alert('walla2');
 				//Battle animation
 				combatUnits = combatUnits - 5;
 				gooPosX = gooPosX + 4;
 				gooPosY = gooPosY - 2;
-				if(!combatUnits)
+				if(combatUnits <= 0)
 				{
+				alert('walla');
 					gooAttack = 0;
 					gooPosX = 300;
 					gooPosY = 300;
-					yourTurn = 0;
 				}
 			}
 		}
@@ -618,6 +629,26 @@ function updateAnimation(caseNumbers)
 				context.drawImage(transitionOutroImage,transitionOutroX,0,1280,720);
 			}
 		}
+		
+		//transitionIntro
+		if(caseNumbers == 300)
+		{
+			if(doOpponentAttack && combatUnits > 0)
+			{
+				//Opponent battle animation
+				combatUnits = combatUnits - 5;
+				opponentAttackPosX = opponentAttackPosX - 4;
+				opponentAttackPosY = opponentAttackPosY + 2;
+				if(!combatUnits)
+				{
+					doOpponentAttack = 0;
+					opponentAttackPosX = 400;
+					opponentAttackPosY = 250;
+					yourTurn = 1;
+					myHealth -= randomIntFromInterval(5,10); 
+				}
+			}
+		}
 	}	
 	if (flag)
 	{
@@ -625,9 +656,9 @@ function updateAnimation(caseNumbers)
           posY = oldCharY;
     }
 		
-	if((units == 0 || units == 40) && moving == 1)
+	if((units == 0 || units == 40 || combatUnits == 0) && moving == 1)
 	{
-		if(units == 0)
+		if(units == 0 || combatUnits == 0)
 		{
 			moving = 0;
 			transitionIntro = 0;
@@ -635,7 +666,7 @@ function updateAnimation(caseNumbers)
 		}
 		
 		
-		if(caseNumbers == 37 || caseNumbers == 38 || caseNumbers == 39 || caseNumbers == 40)
+		if((caseNumbers == 37 || caseNumbers == 38 || caseNumbers == 39 || caseNumbers == 40) && roam)
 		{
 			footstep.pause();
 			footstep.currentTime = 0;
@@ -697,9 +728,15 @@ if(battle && !transitionIntro)
 		context.fillRect(battleChar1PosX,battleChar1PosY-50,(myHealth/playerHealth)*200,30);
 		context.fillRect(battleChar2PosX,battleChar2PosY-50,(opponentHealth/showHealthBars)*200,30);
 	}
+	
 	if(gooAttack)
 	{
 		context.drawImage(gooImage, gooPosX, gooPosY);
+	}
+	
+	if(doOpponentAttack)
+	{
+		context.drawImage(gooImage, opponentAttackPosX, opponentAttackPosY);
 	}
 }
 }
@@ -813,6 +850,13 @@ function gooAttackMethod()
 function randomIntFromInterval(min,max)
 {
     return Math.floor(Math.random()*(max-min+1)+min);
+}
+
+function opponentAttack()
+{
+	doOpponentAttack = 1;
+	caseNumber = 300;
+	combatUnits = 80;
 }
 </script>
 
