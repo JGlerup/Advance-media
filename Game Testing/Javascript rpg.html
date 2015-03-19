@@ -71,12 +71,19 @@ var opponentHealth;
 var myHealth;
 var beginBattle;
 var endBattle;
+var gooAttack;
+var combatUnits;
+var gooPosX = 300;
+var gooPosY = 300;
 
 base_image = new Image();
 base_image.src = 'sprite.png';
 
 whity = new Image();
 whity.src = 'white.png';
+
+gooImage = new Image();
+gooImage.src = 'white.png';
 
 background = new Image();
 background.src = '../Level Design/ClassRoom.png';
@@ -427,12 +434,19 @@ function updateMovement(evt)
 		}
 		if(battle && yourTurn)
 		{
-			opponentHealth-=10;
+			opponentHealth-=gooAttackMethod();
 			if(opponentHealth <= 0)
 			{
 				endBattle = 1;
 				beginBattle = 0;
 			}
+			moving = 1;
+			combatUnits = 80;
+			caseNumber = 38;
+		}
+		else {
+			flag = 1;
+			restricted = 1;
 		}
           break;
 
@@ -454,7 +468,7 @@ function updateAnimation(caseNumbers)
         oldCharY = posY;
 	}
 	
-	if(units > 0)
+	if(units > 0 || combatUnits > 0)
 	{
 		//Left arrow
 		if(caseNumbers == 37)
@@ -572,6 +586,16 @@ function updateAnimation(caseNumbers)
 			if(battle)
 			{
 				//Battle animation
+				combatUnits = combatUnits - 5;
+				gooPosX = gooPosX + 4;
+				gooPosY = gooPosY - 2;
+				if(!combatUnits)
+				{
+					gooAttack = 0;
+					gooPosX = 300;
+					gooPosY = 300;
+					yourTurn = 0;
+				}
 			}
 		}
 		
@@ -672,6 +696,10 @@ if(battle && !transitionIntro)
 		context.fillStyle="#FF0000";
 		context.fillRect(battleChar1PosX,battleChar1PosY-50,(myHealth/playerHealth)*200,30);
 		context.fillRect(battleChar2PosX,battleChar2PosY-50,(opponentHealth/showHealthBars)*200,30);
+	}
+	if(gooAttack)
+	{
+		context.drawImage(gooImage, gooPosX, gooPosY);
 	}
 }
 }
@@ -774,6 +802,12 @@ function drawBubble(ctx, x, y, w, h, radius)
   ctx.stroke();
   ctx.fillStyle="white";
   ctx.fill()
+}
+
+function gooAttackMethod()
+{
+	gooAttack = 1;
+	return randomIntFromInterval(7,12);
 }
 
 function randomIntFromInterval(min,max)
