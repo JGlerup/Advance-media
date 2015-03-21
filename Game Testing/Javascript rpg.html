@@ -47,8 +47,10 @@ var units = 0;
 var caseNumber = 0;
 var roam = 1;
 var battle = 0;
-var transition = 0;
-var transitionX = -1280;
+var transitionIntro = 0;
+var transitionIntroX = -1280;
+var transitionOutro = 0;
+var transitionOutroX = -1280;
 var footstep = document.getElementById('footstep');
 var music = document.getElementById('music');
 var subjective = document.getElementById("subjective");
@@ -57,12 +59,25 @@ var moveSidePos = 0;
 var movePos = 0;
 var trackNumber = 1;
 var whiteboardText;
-var yourTurn = 0;
 var randomText;
 var randomMessages = Array("BIP BIP BUB","~You can't touch this. DAA-DA-DA-DA~","PC shows BCoD. RIP PC.","Your PC got a virus. Good Job!","FORMAT C:");
 var timeRandomText;
 
-
+//Battle info
+var playerHealth = 100;
+var yourTurn = 1;
+var showHealthBars;
+var opponentHealth;
+var myHealth;
+var beginBattle;
+var endBattle;
+var gooAttack;
+var combatUnits;
+var gooPosX = 300;
+var gooPosY = 300;
+var doOpponentAttack;
+var opponentAttackPosX;
+var opponentAttackPosY;
 
 base_image = new Image();
 base_image.src = 'sprite.png';
@@ -70,11 +85,17 @@ base_image.src = 'sprite.png';
 whity = new Image();
 whity.src = 'white.png';
 
+gooImage = new Image();
+gooImage.src = 'white.png';
+
 background = new Image();
 background.src = '../Level Design/ClassRoom.png';
 
-transitionImage = new Image();
-transitionImage.src = 'transitionImage.gif';
+transitionIntroImage = new Image();
+transitionIntroImage.src = 'transitionIntroImage.gif';
+
+transitionOutroImage = new Image();
+transitionOutroImage.src = 'transitionOutroImage.gif';
 
 npc1 = new Image();
 var npc1PosX;
@@ -103,7 +124,7 @@ var battleChar2PosY;
 var battleChar2SizeX;
 var battleChar2SizeY;
 
-music.volume = 0.1;
+music.volume = 0.0; // VOLUME 0.1
 
 document.addEventListener('keydown', updateMovement);
 canvas.addEventListener('mousedown', mouseClick);
@@ -121,35 +142,39 @@ setInterval(function() {
 
 function update()
 {
-	if(roam == 0 && battle == 0)
+	if(!roam && !battle)
 	{
-		transition = 1;
-		if(transitionX == 0 && locationEvent == "hallway")
+		if(beginBattle)
 		{
-			transition = 0;
-			transitionX = -1280;
-			background.src = "hallway_fight.png";
-			battle = 1;
+			transitionIntro = 1;
+		}
+		
+		if(endBattle)
+		{
+			transitionOutro = 1;
+		}
+		
+		if(!transitionIntroX && locationEvent == "hallway" && beginBattle)
+		{
+			startBattle("hallway_fight.png",'cleaning_lady.gif',50);
+		}
+		if(!transitionOutroX && locationEvent == "hallway" && endBattle)
+		{
+			//startBattle("hallway_fight.png",'cleaning_lady.gif',50);
+			transitionOutro = 0;
+			transitionOutroX = -1280;
+			background.src = "../Level Design/"+locationEvent+".png";
+			roam = 1;
 			units = 60;
-			
-			battleChar1.src = 'sprite.png';
-			battleChar1PosX = -200;
-			battleChar1PosY = 470;
-			battleChar1SizeX = 300;
-			battleChar1SizeY = 450;
-			battleChar1cutPosX = 1200;
-			battleChar1cutWidthX = 200;
-			battleChar1cutPosY = 0;
-			
-			battleChar2.src = 'cleaning_lady.gif';
-			battleChar2PosX = 1280;
-			battleChar2PosY = 100;
-			battleChar2SizeX = 300;
-			battleChar2SizeY = 450;
+			endBattle = 0;
+			combatUnits = 0;
 		}
 	}
-	if(roam == 0 && battle == 1)
+	
+	//In battle
+	if(!roam && battle)
 	{
+		//Set chars in position.
 		if(units)
 		{
 			//console.log(battleChar1PosX);
@@ -161,10 +186,34 @@ function update()
 				yourTurn = 1;
 			}
 		}
-		//startBattle();
+		
+		if(!yourTurn && !doOpponentAttack)
+		{
+			setTimeout(opponentAttack(), 1000);
+		}
+		
+		if((opponentHealth <=0) && endBattle)
+		{
+			setTimeout(returnFromBattle(),1000);
+		}
 	}
 	updateAnimation(caseNumber);
 	
+}
+
+function returnFromBattle()
+{
+	battle = 0;
+	battleChar1 = new Image();
+	battleChar2 = new Image();
+	beginBattle = 0;
+	endBattle = 1;
+	caseNumber = 200;
+	moving = 1;
+	units = 30;
+	switchTrack();
+	doOpponentAttack = 0;
+	alertBox('Cleaning lady yells: "ARHH NOW I DO ALL CLEAN. ;("');
 }
 
 function mouseClick(event)
@@ -200,54 +249,61 @@ function updateMovement(evt)
         case 17:
 		if(roam)
 		{
-          if (posX == 0 && posY == 400 && locationEvent == 'classroom')
-		  {
-            // If at door, Fire event
-			if(door == 1)
+			if(locationEvent == 'classroom')
 			{
-				alertBox('You walked out the door using the key.');
-				background.src = '../Level Design/HallWay.png';
-				locationEvent = 'hallway';
-				posX = 150;
-				posY = 120;
-				npc1.src = 'cleaning_lady.gif';
-				npc1PosX = 620;
-				npc1PosY = 320;
-				npc1SizeX = 70;
-				npc1SizeY = 105;
-				subjective.innerText = "Talk to the friendly looking'ish cleaning lady.";
-			}
-			else
-			{
-				alertBox('You cant get out. The door is  locked. "HINT: Something sparkles"');
-				subjective.innerText = "Find the key.";
-				npc2.src = 'sparkles.gif';
-				npc2PosX = 175;
-				npc2PosY = 100;
-				npc2SizeX = 20;
-				npc2PosY = 10;
-			}
-          }
+				if (posX == 0 && posY == 400)
+				{
+					// If at door, Fire event
+					if(door == 1)
+					{
+						alertBox('You walked out the door using the key.');
+						locationEvent = 'hallway';
+						background.src = '../Level Design/'+locationEvent+'.png';
+						posX = 1200;
+						posY = 400;
+						npc1.src = 'cleaning_lady.gif';
+						npc1PosX = 640;
+						npc1PosY = 360;
+						npc1SizeX = 70;
+						npc1SizeY = 105;
+						subjective.innerText = "Talk to the friendly looking'ish cleaning lady.";
+					}
+					else
+					{
+						alertBox('You cant get out. The door is  locked. "HINT: Something sparkles"');
+						subjective.innerText = "Find the key.";
+						npc2.src = 'sparkles.gif';
+						npc2PosX = 175;
+						npc2PosY = 100;
+						npc2SizeX = 20;
+						npc2PosY = 10;
+					}
+				}
 
-		  if (400 <= posX <= 720 && posY == 40 && locationEvent == 'classroom')
-		  {
-			whiteboardText = "Teacher is GAY!";
-		  }
-		  
-		  if(posX == 720 && posY == 360 && locationEvent == 'classroom')
-		  {
-			randomPCMessage();
-		  }
-		  
-		  if(posX == 550 && posY == 320 && locationEvent == 'hallway')
-		  {
-			alertBox('Cleaning lady yells: "U DO CLEAN!, NOT ME!"');
-			music.src = 'Hopeku___Blue_brass.mp3';
-			roam = 0;
-			moving = 1;
-			units = 30;
-			caseNumber = 200;
-		  }
+				if (400 <= posX && posX <= 720 && posY == 40)
+				{
+					whiteboardText = "Dickbutt";
+				}
+				  
+				if(posX == 720 && posY == 360)
+				{
+					randomPCMessage();
+				}
+			}
+			if(locationEvent == 'hallway')
+			{
+				if((posX == 640 && posY == 320) || (posX == 640 && posY == 400) || (posX == 560 && posY == 360) || (posX == 720 && posY == 360))
+				{
+					alertBox('Cleaning lady yells: "U DO CLEAN!, NOT ME!"');
+					battleMusic();
+					//music.src = 'Hopeku___Blue_brass.mp3';
+					roam = 0;
+					moving = 1;
+					units = 30;
+					caseNumber = 200;
+					beginBattle = 1;
+				}
+			}
 		}
 		if(battle)
 		{
@@ -265,6 +321,15 @@ function updateMovement(evt)
 			{
 				//Restricted areas in classroom
 			    if((posX-80 == 720 && posY == 200) || (posX-80 == 960 && posY == 320) || (posX-80 == 480 && posY == 400) || (posX == 0))
+			    {
+					flag = 1;
+					restricted = 1;
+				}
+			}
+			if(locationEvent == 'hallway')
+			{
+				//Restricted areas in hallway
+			    if((posX-80 == 640 && posY == 360) || (posX == 0))
 			    {
 					flag = 1;
 					restricted = 1;
@@ -298,6 +363,15 @@ function updateMovement(evt)
 					restricted = 1;
 				}
 			}
+			if(locationEvent == 'hallway')
+			{
+				//Restricted areas in classroom
+			    if((posX+80 == 640 && posY == 360) || (posX+80 == 1280))
+			    {
+					flag = 1;
+					restricted = 1;
+				}
+			}
 		  if(!moving && !restricted)
 		  {
 			moving = 1;
@@ -315,6 +389,15 @@ function updateMovement(evt)
 			{
 				//Restricted areas in classroom
 			    if((480 <= posX && posX <= 720 && posY+40 == 200) || (720 <= posX && posX <= 960 && posY+40 == 320) || (240 <= posX && posX <= 480 && posY+40 == 400) || (posY == 600))
+			    {
+					flag = 1;
+					restricted = 1;
+				}
+			}
+			if(locationEvent == 'hallway')
+			{
+				//Restricted areas in classroom
+			    if((posX == 640 && posY+40 == 360) || (posY == 600))
 			    {
 					flag = 1;
 					restricted = 1;
@@ -339,11 +422,19 @@ function updateMovement(evt)
 		{
 		if(locationEvent == 'classroom')
 		{
-		  if((480 <= posX && posX <= 720 && posY-40 == 200) || (720 <= posX && posX <= 960 && posY-40 == 320) || (240 <= posX && posX <= 480 && posY-40 == 400) || (posY-40 < 40)) {
+			if((480 <= posX && posX <= 720 && posY-40 == 200) || (720 <= posX && posX <= 960 && posY-40 == 320) || (240 <= posX && posX <= 480 && posY-40 == 400) || (posY-40 < 40)) {
+				flag = 1;
+				restricted = 1;
+			}
+			
+		}
+		if(locationEvent == 'hallway')
+		{	  
+			  if((640 == posX && posY-40 == 360) || (posY-40 < 40)) {
 				flag = 1;
 				restricted = 1;
 			  }
-			  }
+		}
 		if(moving == 0 && restricted == 0)
 		  {
 			moving = 1;
@@ -353,7 +444,20 @@ function updateMovement(evt)
 		}
 		if(battle && yourTurn)
 		{
-			
+			yourTurn = 0;
+			opponentHealth-=gooAttackMethod();
+			if(opponentHealth <= 0)
+			{
+				endBattle = 1;
+				beginBattle = 0;
+			}
+			moving = 1;
+			combatUnits = 80;
+			caseNumber = 38;
+		}
+		else {
+			flag = 1;
+			restricted = 1;
 		}
           break;
 
@@ -375,7 +479,7 @@ function updateAnimation(caseNumbers)
         oldCharY = posY;
 	}
 	
-	if(units > 0)
+	if(units > 0 || combatUnits > 0)
 	{
 		//Left arrow
 		if(caseNumbers == 37)
@@ -468,7 +572,7 @@ function updateAnimation(caseNumbers)
 		//Up arrow
 		if(caseNumbers == 38)
 		{
-			if(roam == 1)
+			if(roam)
 			{
 				units = units - 5;
 				posY = posY - 2.5;
@@ -485,23 +589,65 @@ function updateAnimation(caseNumbers)
 				posY = 0;
 				flag = 1;
 			  }
-			  if(!(flag))
+			  if(!flag)
 			  {
 				resetChar();
 			  }
 			}
+			if(battle)
+			{
+				//alert('walla2');
+				//Battle animation
+				combatUnits = combatUnits - 5;
+				gooPosX = gooPosX + 4;
+				gooPosY = gooPosY - 2;
+				if(combatUnits <= 0)
+				{
+					//alert('walla');
+					gooAttack = 0;
+					gooPosX = 300;
+					gooPosY = 300;
+				}
+			}
 		}
 		
-		//transition
+		//transitionIntro
 		if(caseNumbers == 200)
 		{
-			if(transition == 1)
+			if(transitionIntro)
 			{
 				units = units - 1.5;
-				transitionX = transitionX + 64;
+				transitionIntroX = transitionIntroX + 64;
 				context.clearRect ( 0 , 0 , canvas.width, canvas.height );
-				context.drawImage(transitionImage,transitionX,0,1280,720);
+				context.drawImage(transitionIntroImage,transitionIntroX,0,1280,720);
 				
+			}
+			if(transitionOutro)
+			{
+				units = units - 1.5;
+				transitionOutroX = transitionOutroX + 64;
+				context.clearRect ( 0 , 0 , canvas.width, canvas.height );
+				context.drawImage(transitionOutroImage,transitionOutroX,0,1280,720);
+			}
+		}
+		
+		//transitionIntro
+		if(caseNumbers == 300)
+		{
+			if(doOpponentAttack && combatUnits > 0)
+			{
+				//Opponent battle animation
+				combatUnits = combatUnits - 5;
+				opponentAttackPosX = opponentAttackPosX - 4;
+				opponentAttackPosY = opponentAttackPosY + 2;
+				if(!combatUnits)
+				{
+					doOpponentAttack = 0;
+					opponentAttackPosX = 400;
+					opponentAttackPosY = 250;
+					yourTurn = 1;
+					myHealth -= randomIntFromInterval(5,10); 
+				}
 			}
 		}
 	}	
@@ -511,16 +657,17 @@ function updateAnimation(caseNumbers)
           posY = oldCharY;
     }
 		
-	if((units == 0 || units == 40) && moving == 1)
+	if((units == 0 || units == 40 || combatUnits == 0) && moving == 1)
 	{
-		if(units == 0)
+		if(units == 0 || combatUnits == 0)
 		{
 			moving = 0;
-			transition = 0;
+			transitionIntro = 0;
+			transitionOutro = 0;
 		}
 		
 		
-		if(caseNumbers == 37 || caseNumbers == 38 || caseNumbers == 39 || caseNumbers == 40)
+		if((caseNumbers == 37 || caseNumbers == 38 || caseNumbers == 39 || caseNumbers == 40) && roam)
 		{
 			footstep.pause();
 			footstep.currentTime = 0;
@@ -550,15 +697,15 @@ if(whiteboardText && locationEvent == 'classroom')
 	gradient.addColorStop("1.0","red");
 	// Fill with gradient
 	context.fillStyle=gradient;
-	context.fillText(whiteboardText,500,100);
+	context.fillText(whiteboardText,530,70);
 }
 context.drawImage(npc2, npc2PosX, npc2PosY, npc2SizeX, npc2SizeY);
 //context.drawImage(whity, cutPosX, cutPosY, cutWidthX, 300, posX, posY, 70, 105);
 if(randomText)
 {
-	drawBubble(context, 690,330,350, 30, 20);
-	//context.drawImage(whity, 0, 0, 200, 200, 690, 330, 370, 30);
 	context.font="20px Comic-Sans";
+	var textWidth = context.measureText(randomText);
+	drawBubble(context, 770,330,textWidth.width+10, 30, 20);	
 	// Create gradient
 	var gradient=context.createLinearGradient(700,0,800,0);
 	gradient.addColorStop("0","green");
@@ -566,17 +713,60 @@ if(randomText)
 	gradient.addColorStop("1.0","green");
 	// Fill with gradient
 	context.fillStyle=gradient;
-	context.fillText(randomText,700,350);
+	context.fillText(randomText,775,350);
 }
 context.drawImage(base_image, cutPosX, cutPosY, cutWidthX, 300, posX, posY, 70, 105);
 }
-if(battle == 1 && transition == 0)
+if(battle && !transitionIntro)
 {
 	context.clearRect ( 0 , 0 , canvas.width, canvas.height );
 	context.drawImage(background,0,0,1280,720);
 	context.drawImage(battleChar1, battleChar1cutPosX, battleChar1cutPosY, cutWidthX, 300, battleChar1PosX, battleChar1PosY, battleChar1SizeX, battleChar1SizeY);
 	context.drawImage(battleChar2, 0, 0, cutWidthX, 300, battleChar2PosX, battleChar2PosY, battleChar2SizeX, battleChar2SizeY);
+	if(showHealthBars)
+	{
+		context.fillStyle="#FF0000";
+		context.fillRect(battleChar1PosX,battleChar1PosY-50,(myHealth/playerHealth)*200,30);
+		context.fillRect(battleChar2PosX,battleChar2PosY-50,(opponentHealth/showHealthBars)*200,30);
+	}
+	
+	if(gooAttack)
+	{
+		context.drawImage(gooImage, gooPosX, gooPosY);
+	}
+	
+	if(doOpponentAttack)
+	{
+		context.drawImage(gooImage, opponentAttackPosX, opponentAttackPosY);
+	}
 }
+}
+
+function startBattle(place,opponent,healthPoints)
+{
+	transitionIntro = 0;
+	transitionIntroX = -1280;
+	background.src = place;
+	battle = 1;
+	units = 60;
+			
+	battleChar1.src = 'sprite.png';
+	battleChar1PosX = -200;
+	battleChar1PosY = 210;
+	battleChar1SizeX = 200;
+	battleChar1SizeY = 300;
+	battleChar1cutPosX = 1200;
+	battleChar1cutWidthX = 200;
+	battleChar1cutPosY = 0;
+			
+	battleChar2.src = opponent;
+	battleChar2PosX = 1280;
+	battleChar2PosY = 210;
+	battleChar2SizeX = 200;
+	battleChar2SizeY = 300;
+	showHealthBars = healthPoints;
+	opponentHealth = healthPoints;
+	myHealth = playerHealth;
 }
 
 function resetChar()
@@ -614,9 +804,17 @@ function switchTrack()
 	}
 }
 
+function battleMusic()
+{
+	var battleTrack = randomIntFromInterval(0,1);
+	music.volume = 0.1;
+	music.src = "battle"+battleTrack+".mp3";
+	music.play();
+}
+
 function randomPCMessage()
 {
-	randomText = randomMessages[Math.floor(Math.random()*randomMessages.length)];
+	randomText = randomMessages[randomIntFromInterval(0,randomMessages.length-1)];
 	clearTimeout(timeRandomText);
 	timeRandomText = setTimeout(function(){randomText = null;}, 2000);
 }
@@ -629,19 +827,37 @@ function drawBubble(ctx, x, y, w, h, radius)
   ctx.strokeStyle="black";
   ctx.lineWidth="2";
   ctx.moveTo(x+radius, y);
-  ctx.lineTo(x+radius/2, y-10);
-  ctx.lineTo(x+radius * 2, y);
   ctx.lineTo(r-radius, y);
   ctx.quadraticCurveTo(r, y, r, y+radius);
   ctx.lineTo(r, y+h-radius);
   ctx.quadraticCurveTo(r, b, r-radius, b);
   ctx.lineTo(x+radius, b);
+  ctx.lineTo(x+radius/2, y+50);
+  ctx.lineTo(x+radius * 2, y+30);
   ctx.quadraticCurveTo(x, b, x, b-radius);
   ctx.lineTo(x, y+radius);
   ctx.quadraticCurveTo(x, y, x+radius, y);
   ctx.stroke();
   ctx.fillStyle="white";
   ctx.fill()
+}
+
+function gooAttackMethod()
+{
+	gooAttack = 1;
+	return randomIntFromInterval(7,12);
+}
+
+function randomIntFromInterval(min,max)
+{
+    return Math.floor(Math.random()*(max-min+1)+min);
+}
+
+function opponentAttack()
+{
+	doOpponentAttack = 1;
+	caseNumber = 300;
+	combatUnits = 80;
 }
 </script>
 
