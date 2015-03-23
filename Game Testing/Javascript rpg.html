@@ -129,16 +129,49 @@ music.volume = 0.0; // VOLUME 0.1
 document.addEventListener('keydown', updateMovement);
 canvas.addEventListener('mousedown', mouseClick);
 music.addEventListener('ended', switchTrack);
-//window.addEventListener('load', render);
+window.addEventListener('load', render);
 var FPS = 30;
-setInterval(function() {
+var now;
+var then = Date.now();
+var interval = 1000/FPS;
+var delta;
+//setInterval(function() {
 //function render(){
 
-  update();
-  draw();
+//  update();
+//  draw();
 //  window.requestAnimationFrame(render);
 //  }
-}, 1000/FPS);
+//}, 1000/FPS);
+
+function render() {
+     
+    requestAnimationFrame(render);
+     
+    now = Date.now();
+    delta = now - then;
+     
+    if (delta > interval) {
+        // update time stuffs
+         
+        // Just `then = now` is not enough.
+        // Lets say we set fps at 10 which means
+        // each frame must take 100ms
+        // Now frame executes in 16ms (60fps) so
+        // the loop iterates 7 times (16*7 = 112ms) until
+        // delta > interval === true
+        // Eventually this lowers down the FPS as
+        // 112*10 = 1120ms (NOT 1000ms).
+        // So we have to get rid of that extra 12ms
+        // by subtracting delta (112) % interval (100).
+        // Hope that makes sense.
+         
+        then = now - (delta % interval);
+        update();
+		draw();
+        // ... Code for Drawing the Frame ...
+    }
+}
 
 function update()
 {
@@ -213,6 +246,7 @@ function returnFromBattle()
 	units = 30;
 	switchTrack();
 	doOpponentAttack = 0;
+	gooAttack = 0;
 	alertBox('Cleaning lady yells: "ARHH NOW I DO ALL CLEAN. ;("');
 }
 
@@ -601,7 +635,7 @@ function updateAnimation(caseNumbers)
 				combatUnits = combatUnits - 5;
 				gooPosX = gooPosX + 4;
 				gooPosY = gooPosY - 2;
-				if(combatUnits <= 0)
+				if(combatUnits <= 5)
 				{
 					//alert('walla');
 					gooAttack = 0;
