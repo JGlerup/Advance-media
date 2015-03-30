@@ -73,11 +73,11 @@ var beginBattle;
 var endBattle;
 var gooAttack;
 var combatUnits;
-var gooPosX = 300;
-var gooPosY = 300;
+var gooPosX = 250;
+var gooPosY = 250;
 var doOpponentAttack;
-var opponentAttackPosX;
-var opponentAttackPosY;
+var opponentAttackPosX = 650;
+var opponentAttackPosY = 200;
 var opponentTimeout;
 
 base_image = new Image();
@@ -87,7 +87,10 @@ whity = new Image();
 whity.src = 'white.png';
 
 gooImage = new Image();
-gooImage.src = 'white.png';
+gooImage.src = '../Weapons/snotter_fly.png';
+
+opponentAttackImage = new Image();
+opponentAttackImage.src = 'Caution.png';
 
 background = new Image();
 background.src = '../Level Design/ClassRoom.png';
@@ -630,7 +633,7 @@ function updateAnimation(caseNumbers)
 				//alert(gooAttack);
 				//Battle animation
 				combatUnits = combatUnits - 5;
-				gooPosX = gooPosX + 10;
+				gooPosX = gooPosX + 40;
 				gooPosY = gooPosY - 5;
 				if(combatUnits == 0)
 				{
@@ -649,8 +652,8 @@ function updateAnimation(caseNumbers)
 						opponentTimeout = setTimeout(opponentAttack(), 5000);
 					}
 					gooAttack = 0;
-					gooPosX = 300;
-					gooPosY = 300;
+					gooPosX = 250;
+					gooPosY = 250;
 				}
 			}
 		}
@@ -682,12 +685,12 @@ function updateAnimation(caseNumbers)
 			{
 				//Opponent battle animation
 				combatUnits = combatUnits - 5;
-				opponentAttackPosX = opponentAttackPosX - 10;
+				opponentAttackPosX = opponentAttackPosX - 20;
 				opponentAttackPosY = opponentAttackPosY + 5;
 				if(!combatUnits)
 				{
 					doOpponentAttack = 0;
-					opponentAttackPosX = 400;
+					opponentAttackPosX = 650;
 					opponentAttackPosY = 250;
 					yourTurn = 1;
 					myHealth -= randomIntFromInterval(5,10); 
@@ -776,12 +779,12 @@ if(battle && !transitionIntro)
 	
 	if(gooAttack)
 	{
-		context.drawImage(gooImage, gooPosX, gooPosY);
+		context.drawImage(gooImage, gooPosX, gooPosY, 50, 50);
 	}
 	
 	if(doOpponentAttack)
 	{
-		context.drawImage(gooImage, opponentAttackPosX, opponentAttackPosY);
+		context.drawImage(opponentAttackImage, opponentAttackPosX, opponentAttackPosY);
 	}
 }
 }
