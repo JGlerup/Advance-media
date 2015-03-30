@@ -78,6 +78,7 @@ var gooPosY = 300;
 var doOpponentAttack;
 var opponentAttackPosX;
 var opponentAttackPosY;
+var opponentTimeout;
 
 base_image = new Image();
 base_image.src = 'sprite.png';
@@ -207,6 +208,12 @@ function update()
 	//In battle
 	if(!roam && battle)
 	{
+		if(opponentHealth <= 0 && combatUnits <= 0)
+		{
+			endBattle = 1;
+			beginBattle = 0;
+		}
+		
 		//Set chars in position.
 		if(units)
 		{
@@ -220,14 +227,9 @@ function update()
 			}
 		}
 		
-		if(!yourTurn && !doOpponentAttack)
-		{
-			setTimeout(opponentAttack(), 1000);
-		}
-		
 		if((opponentHealth <=0) && endBattle)
 		{
-			setTimeout(returnFromBattle(),1000);
+			setTimeout(returnFromBattle(),5000);
 		}
 	}
 	updateAnimation(caseNumber);
@@ -479,12 +481,7 @@ function updateMovement(evt)
 		if(battle && yourTurn)
 		{
 			yourTurn = 0;
-			opponentHealth-=gooAttackMethod();
-			if(opponentHealth <= 0)
-			{
-				endBattle = 1;
-				beginBattle = 0;
-			}
+			gooAttackMethod();
 			moving = 1;
 			combatUnits = 80;
 			caseNumber = 38;
@@ -630,14 +627,27 @@ function updateAnimation(caseNumbers)
 			}
 			if(battle)
 			{
-				//alert('walla2');
+				//alert(gooAttack);
 				//Battle animation
 				combatUnits = combatUnits - 5;
-				gooPosX = gooPosX + 4;
-				gooPosY = gooPosY - 2;
-				if(combatUnits <= 5)
+				gooPosX = gooPosX + 10;
+				gooPosY = gooPosY - 5;
+				if(combatUnits == 0)
 				{
+					opponentHealth-=gooAttackDamage();
+					if(opponentHealth <= 0)
+					{
+						opponentHealth = 0;
+					}
 					//alert('walla');
+					if(opponentTimeout)
+					{
+						clearTimeout(opponentTimeout);
+					}
+					if(opponentHealth > 0)
+					{
+						opponentTimeout = setTimeout(opponentAttack(), 5000);
+					}
 					gooAttack = 0;
 					gooPosX = 300;
 					gooPosY = 300;
@@ -672,8 +682,8 @@ function updateAnimation(caseNumbers)
 			{
 				//Opponent battle animation
 				combatUnits = combatUnits - 5;
-				opponentAttackPosX = opponentAttackPosX - 4;
-				opponentAttackPosY = opponentAttackPosY + 2;
+				opponentAttackPosX = opponentAttackPosX - 10;
+				opponentAttackPosY = opponentAttackPosY + 5;
 				if(!combatUnits)
 				{
 					doOpponentAttack = 0;
@@ -782,6 +792,7 @@ function startBattle(place,opponent,healthPoints)
 	transitionIntroX = -1280;
 	background.src = place;
 	battle = 1;
+	yourTurn = 1;
 	units = 60;
 			
 	battleChar1.src = 'sprite.png';
@@ -879,6 +890,10 @@ function drawBubble(ctx, x, y, w, h, radius)
 function gooAttackMethod()
 {
 	gooAttack = 1;
+}
+
+function gooAttackDamage()
+{
 	return randomIntFromInterval(7,12);
 }
 
