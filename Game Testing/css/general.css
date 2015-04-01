@@ -1,0 +1,12 @@
+#game_canvas {
+	width: 100%;
+	border: solid 2px #ccc;
+}
+
+.sidebar > h4 {
+	margin-top: 50px;
+}
+
+.sidebar > h4:first-child {
+	margin-top: 0;
+}
