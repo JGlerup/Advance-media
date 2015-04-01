@@ -44,6 +44,7 @@ var door = 0;
 var locationEvent = 'classroom';
 var moving = 0;
 var units = 0;
+var dickbuttUnits;
 var caseNumber = 0;
 var roam = 1;
 var battle = 0;
@@ -100,6 +101,16 @@ transitionIntroImage.src = 'transitionIntroImage.gif';
 
 transitionOutroImage = new Image();
 transitionOutroImage.src = 'transitionOutroImage.gif';
+
+dickbutt = new Image();
+var dickbuttPosX;
+var dickbuttPosY;
+var dickbuttSizeX;
+var dickbuttSizeY;
+var dickbuttCutPosX;
+var dickbuttCutPosY;
+var dickbuttCutHeightX;
+var dickbuttCutHeightY;
 
 npc1 = new Image();
 var npc1PosX;
@@ -259,10 +270,12 @@ function mouseClick(event)
 {
 	canvasX = event.pageX;
 	canvasY = event.pageY;
-	if(90<canvasX && canvasX < 146 && 10<canvasY && canvasY<110 && locationEvent == 'classroom')
+	canvasX -= canvas.offsetLeft;
+	canvasY -= canvas.offsetTop;
+	if(273<canvasX && canvasX < 300 && 121<canvasY && canvasY<155 && locationEvent == 'classroom' && subjective.innerText == "Find the key.")
 	{
 		// Find key in classroom event.
-		alertBox('You found the key!'+canvasX+" "+canvasY);
+		alertBox('You found the key!');
 		door = 1;
 		npc2.src = '';
 		subjective.innerText = "";
@@ -311,17 +324,18 @@ function updateMovement(evt)
 					{
 						alertBox('You cant get out. The door is  locked. "HINT: Something sparkles"');
 						subjective.innerText = "Find the key.";
-						npc2.src = 'sparkles.gif';
-						npc2PosX = 175;
-						npc2PosY = 100;
-						npc2SizeX = 20;
-						npc2PosY = 10;
+						npc2.src = '../Assets/key.png';
+						npc2PosX = 278;
+						npc2PosY = 129;
+						npc2SizeX = 15;
+						npc2SizeY = 4;
 					}
 				}
 
 				if (400 <= posX && posX <= 720 && posY == 40)
 				{
 					whiteboardText = "Dickbutt";
+					startDickbutt();
 				}
 				  
 				if(posX == 720 && posY == 360)
@@ -511,6 +525,19 @@ function updateAnimation(caseNumbers)
 	{
 		oldCharX = posX;
         oldCharY = posY;
+	}
+	
+	if(dickbuttUnits > 0)
+	{
+		//dickbutt
+		dickbuttUnits = dickbuttUnits - 1;
+		if(dickbuttUnits > 40)
+		{
+			dickbuttCutPosX = dickbuttCutPosX - 3.725;
+		}
+		else {
+			dickbuttPosX = dickbuttPosX + 1;
+		}
 	}
 	
 	if(units > 0 || combatUnits > 0)
@@ -730,6 +757,10 @@ if(roam == 1)
 {
 context.clearRect ( 0 , 0 , canvas.width, canvas.height );
 context.drawImage(background,0,0,1280,720);
+if(dickbutt)
+{
+	context.drawImage(dickbutt, dickbuttCutPosX, dickbuttCutPosY, dickbuttCutHeightX, dickbuttCutHeightY, dickbuttPosX, dickbuttPosY, dickbuttSizeX, dickbuttSizeY);
+}
 if(door == 1)
 {
 	context.drawImage(npc1, npc1PosX, npc1PosY, npc1SizeX, npc1SizeY);
@@ -746,7 +777,10 @@ if(whiteboardText && locationEvent == 'classroom')
 	context.fillStyle=gradient;
 	context.fillText(whiteboardText,530,70);
 }
-context.drawImage(npc2, npc2PosX, npc2PosY, npc2SizeX, npc2SizeY);
+if(npc2)
+{
+	context.drawImage(npc2, 250, 0, 250, 100, npc2PosX, npc2PosY, npc2SizeX, npc2SizeY);
+}
 //context.drawImage(whity, cutPosX, cutPosY, cutWidthX, 300, posX, posY, 70, 105);
 if(randomText)
 {
@@ -910,6 +944,20 @@ function opponentAttack()
 	doOpponentAttack = 1;
 	caseNumber = 300;
 	combatUnits = 80;
+}
+
+function startDickbutt()
+{
+	dickbutt.src = "../Assets/dickbutt.png";
+	dickbuttPosX = 885;
+	dickbuttPosY = 60;
+	dickbuttSizeX = 40;
+	dickbuttSizeY = 40;
+	dickbuttCutPosX = 149;
+	dickbuttCutPosY = 0;
+	dickbuttCutHeightX = 149;
+	dickbuttCutHeightY = 155;
+	dickbuttUnits = 80;
 }
 </script>
 
