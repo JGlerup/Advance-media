@@ -23,7 +23,7 @@
     <![endif]-->
   </head>
   <body>
-	<audio id="music" type="audio/mp3" src="Vince--A-Walk.mp3" autoplay loop></audio>
+	<audio id="music" type="audio/mp3" src="background1.mp3" autoplay loop></audio>
 	<audio id="footstep" type="audio/mp3" src="footstepFloor.mp3"></audio>
 	<header>
 		<div class="container-fluid">
@@ -285,14 +285,17 @@ function returnFromBattle()
 
 function mouseClick(event)
 {
+	var rect = canvas.getBoundingClientRect();
 	canvasX = event.pageX;
 	canvasY = event.pageY;
-	canvasX -= canvas.offsetLeft;
-	canvasY -= canvas.offsetTop;
-	if(273<canvasX && canvasX < 300 && 121<canvasY && canvasY<155 && locationEvent == 'classroom' && subjective.innerText == "Find the key.")
+	canvasX -= rect.left;
+	canvasY -= rect.top;
+	
+	if(300<canvasX && canvasX < 325 && 130<canvasY && canvasY<170 && locationEvent == 'classroom' && subjective.innerText == "Find the key.")
 	{
 		// Find key in classroom event.
 		alertBox('You found the key!');
+	//	alertBox(canvasX+", "+canvasY);
 		door = 1;
 		npc2.src = '';
 		subjective.innerText = "";
