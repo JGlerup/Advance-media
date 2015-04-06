@@ -58,6 +58,7 @@ cutWidthX = 200;
 cutPosY = 0;
 var charReset;
 var door = 0;
+var doorToBusStop = 1;
 var locationEvent = 'classroom';
 var moving = 0;
 var units = 0;
@@ -157,7 +158,7 @@ var battleChar2PosY;
 var battleChar2SizeX;
 var battleChar2SizeY;
 
-music.volume = 0.1; // VOLUME 0.1
+music.volume = 0.0; // VOLUME 0.1
 
 document.addEventListener('keydown', updateMovement);
 canvas.addEventListener('mousedown', mouseClick);
@@ -365,6 +366,7 @@ function updateMovement(evt)
 					randomPCMessage();
 				}
 			}
+			
 			if(locationEvent == 'hallway')
 			{
 				if((posX == 640 && posY == 320) || (posX == 640 && posY == 400) || (posX == 560 && posY == 360) || (posX == 720 && posY == 360))
@@ -377,6 +379,30 @@ function updateMovement(evt)
 					units = 30;
 					caseNumber = 200;
 					beginBattle = 1;
+				}
+				
+				if(posX == 960 && posY == 600)
+				{
+					// If at door to bus stop, Fire event
+					if(doorToBusStop == 1)
+					{
+						alertBox('You walked out the door.');
+						locationEvent = 'busstop';
+						background.src = '../Level Design/'+locationEvent+'.png';
+						posX = 480;
+						posY = 0;
+						npc1 = new Image();
+					}
+					else
+					{
+						alertBox('You cant get out. The door is  locked. "HINT: Something sparkles"');
+						subjective.innerText = "Find the key.";
+						npc2.src = '../Assets/key.png';
+						npc2PosX = 278;
+						npc2PosY = 129;
+						npc2SizeX = 15;
+						npc2SizeY = 4;
+					}
 				}
 			}
 		}
