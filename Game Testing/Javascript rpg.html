@@ -82,6 +82,8 @@ var randomText;
 var randomMessages = Array("BIP BIP BUB","~You can't touch this. DAA-DA-DA-DA~","PC shows BCoD. RIP PC.","Your PC got a virus. Good Job!","FORMAT C:");
 var timeRandomText;
 var drawEarly = 0;
+var roadWarning;
+var roadKill;
 
 //Battle info
 var playerHealth = 100;
@@ -211,15 +213,18 @@ function update()
 {
 	if(roam && !battle)
 	{
-		if(locationEvent == 'busstop' && (roadWarning || ))
+		if(locationEvent == 'busstop')
 		{
-			if(posY == 200)
+			if(posY == 200 && !roadWarning)
 			{
 				alertBox("Sure! Walk on the road! Dork!");
+				roadWarning = 1;
 			}
-			if(posY == 240)
+			if(posY == 240 && !roadKill)
 			{
 				alertBox('(ノಠ益ಠ)ノ彡︵ ┻━┻');
+				roadKill = 1;
+				startCyclingDickbutt();
 			}
 		}
 	}
@@ -339,6 +344,7 @@ function updateMovement(evt)
         case 17:
 		if(roam)
 		{
+			var keyPress = 1;
 			if(locationEvent == 'classroom')
 			{
 				if (posX == 0 && posY == 400)
@@ -357,6 +363,7 @@ function updateMovement(evt)
 						npc1SizeX = 70;
 						npc1SizeY = 105;
 						subjective.innerText = "Talk to the friendly looking'ish cleaning lady.";
+						keyPress = 0;
 					}
 					else
 					{
@@ -367,6 +374,7 @@ function updateMovement(evt)
 						npc2PosY = 129;
 						npc2SizeX = 15;
 						npc2SizeY = 4;
+						keyPress = 0;
 					}
 				}
 
@@ -384,7 +392,7 @@ function updateMovement(evt)
 			
 			if(locationEvent == 'hallway')
 			{
-				if((posX == 640 && posY == 320) || (posX == 640 && posY == 400) || (posX == 560 && posY == 360) || (posX == 720 && posY == 360))
+				if(((posX == 640 && posY == 320) || (posX == 640 && posY == 400) || (posX == 560 && posY == 360) || (posX == 720 && posY == 360)) && keyPress)
 				{
 					alertBox('Cleaning lady yells: "U DO CLEAN!, NOT ME!"');
 					battleMusic();
@@ -394,9 +402,10 @@ function updateMovement(evt)
 					units = 30;
 					caseNumber = 200;
 					beginBattle = 1;
+					keyPress = 0;
 				}
 				
-				if(posX == 960 && posY == 600)
+				if(posX == 960 && posY == 600 && keyPress)
 				{
 					// If at door to bus stop, Fire event
 					if(doorToBusStop == 1)
@@ -407,6 +416,7 @@ function updateMovement(evt)
 						posX = 480;
 						posY = 0;
 						npc1 = new Image();
+						keyPress = 0;
 					}
 					else
 					{
@@ -417,6 +427,29 @@ function updateMovement(evt)
 						npc2PosY = 129;
 						npc2SizeX = 15;
 						npc2SizeY = 4;
+						keyPress = 0;
+					}
+				}
+			}
+			
+			if(locationEvent == 'busstop')
+			{				
+				if(posX == 480 && posY == 0 && keyPress)
+				{
+					// If at door to bus stop, Fire event
+					if(doorToBusStop == 1)
+					{
+						alertBox('You walked inside again.');
+						locationEvent = 'hallway';
+						background.src = '../Level Design/'+locationEvent+'.png';
+						posX = 960;
+						posY = 600;
+						npc1.src = 'cleaning_lady.gif';
+						npc1PosX = 640;
+						npc1PosY = 360;
+						npc1SizeX = 70;
+						npc1SizeY = 105;
+						keyPress = 0;
 					}
 				}
 			}
@@ -626,12 +659,25 @@ function updateAnimation(caseNumbers)
 	{
 		//dickbutt
 		dickbuttUnits = dickbuttUnits - 1;
-		if(dickbuttUnits > 40)
+		if(locationEvent == "classroom")
 		{
-			dickbuttCutPosX = dickbuttCutPosX - 3.725;
+			if(dickbuttUnits > 40)
+			{
+				dickbuttCutPosX = dickbuttCutPosX - 3.725;
+			}
+			else {
+				dickbuttPosX = dickbuttPosX + 1;
+			}
 		}
-		else {
-			dickbuttPosX = dickbuttPosX + 1;
+		if(locationEvent == "busstop")
+		{
+			if(dickbuttUnits > 80)
+			{
+				dickbuttCutPosX = dickbuttCutPosX - 9.075;
+			}
+			else {
+				dickbuttPosX = dickbuttPosX + 16;
+			}
 		}
 	}
 	
@@ -902,7 +948,12 @@ if(roam == 1)
 			context.drawImage(npc1, npc1PosX, npc1PosY, npc1SizeX, npc1SizeY);
 		break;
 		
-		
+		case "busstop":
+			if(dickbutt)
+			{
+				context.drawImage(dickbutt, dickbuttCutPosX, dickbuttCutPosY, dickbuttCutHeightX, dickbuttCutHeightY, dickbuttPosX, dickbuttPosY, dickbuttSizeX, dickbuttSizeY);
+			}
+		break;
 	}
 	if(!drawEarly)
 	{
@@ -1069,6 +1120,22 @@ function startDickbutt()
 	dickbuttCutHeightX = 149;
 	dickbuttCutHeightY = 155;
 	dickbuttUnits = 80;
+}
+
+function startCyclingDickbutt()
+{
+	dickbutt.src = "../Assets/IndianBike.png";
+	dickbuttPosX = 0;
+	dickbuttPosY = 240;
+	dickbuttSizeX = 726;
+	dickbuttSizeY = 323;
+	dickbuttCutPosX = 726;
+	dickbuttCutPosY = 0;
+	dickbuttCutHeightX = 726;
+	dickbuttCutHeightY = 323;
+	dickbuttUnits = 160;
+	music.src = "dickbutt.m4a";
+	music.play();
 }
 </script>
 
