@@ -209,6 +209,21 @@ function render() {
 
 function update()
 {
+	if(roam && !battle)
+	{
+		if(locationEvent == 'busstop' && (roadWarning || ))
+		{
+			if(posY == 200)
+			{
+				alertBox("Sure! Walk on the road! Dork!");
+			}
+			if(posY == 240)
+			{
+				alertBox('(ノಠ益ಠ)ノ彡︵ ┻━┻');
+			}
+		}
+	}
+	
 	if(!roam && !battle)
 	{
 		if(beginBattle)
@@ -355,7 +370,7 @@ function updateMovement(evt)
 					}
 				}
 
-				if (400 <= posX && posX <= 720 && posY == 40)
+				if (400 <= posX && posX <= 720 && posY == 40 && !dickbutt.src)
 				{
 					whiteboardText = "Dickbutt";
 					startDickbutt();
@@ -436,6 +451,14 @@ function updateMovement(evt)
 					restricted = 1;
 				}
 			}
+			if(locationEvent == 'busstop')
+			{
+				if(posY == 240)
+				{
+					flag = 1;
+					restricted = 1;				
+				}
+			}
 		  if(!moving && !restricted)
 		  {
 		  moving = 1;
@@ -473,6 +496,14 @@ function updateMovement(evt)
 					restricted = 1;
 				}
 			}
+			if(locationEvent == 'busstop')
+			{
+				if(posY == 240)
+				{
+					flag = 1;
+					restricted = 1;				
+				}
+			}
 		  if(!moving && !restricted)
 		  {
 			moving = 1;
@@ -502,6 +533,14 @@ function updateMovement(evt)
 			    {
 					flag = 1;
 					restricted = 1;
+				}
+			}
+			if(locationEvent == 'busstop')
+			{
+				if(posY == 240)
+				{
+					flag = 1;
+					restricted = 1;				
 				}
 			}
 		  if(!moving && !restricted)
@@ -536,6 +575,14 @@ function updateMovement(evt)
 				restricted = 1;
 			  }
 		}
+		if(locationEvent == 'busstop')
+			{
+				if(posY == 240)
+				{
+					flag = 1;
+					restricted = 1;				
+				}
+			}
 		if(moving == 0 && restricted == 0)
 		  {
 			moving = 1;
