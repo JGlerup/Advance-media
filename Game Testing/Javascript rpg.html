@@ -48,6 +48,30 @@
 		</div>
 	</section>
 <script>
+(function () {
+  var lastTime = 0;
+  var vendors = ['ms', 'moz', 'webkit', 'o'];
+  for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+    window.requestAnimationFrame = window[vendors[x] + 'RequestAnimationFrame'];
+    window.cancelAnimationFrame = window[vendors[x] + 'CancelAnimationFrame'] || window[vendors[x] + 'CancelRequestAnimationFrame'];
+  }
+  if(!window.requestAnimationFrame)
+    window.requestAnimationFrame = function (callback, element) {
+      var currTime = new Date().getTime();
+      var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+      var id = window.setTimeout(function () {
+        callback(currTime + timeToCall);
+      },
+      timeToCall);
+      lastTime = currTime + timeToCall;
+      return id;
+  };
+  if(!window.cancelAnimationFrame)
+    window.cancelAnimationFrame = function (id) {
+      clearTimeout(id);
+  };
+}());
+
 var canvas = document.getElementById('game_canvas'),
 context = canvas.getContext('2d');
 
@@ -87,6 +111,7 @@ var timeRandomText;
 var drawEarly = 0;
 var roadWarning;
 var roadKill;
+var ladyDefeated = 1;
 
 //Battle info
 var playerHealth = 100;
@@ -246,7 +271,7 @@ function update()
 		
 		if(!transitionIntroX && locationEvent == "hallway" && beginBattle)
 		{
-			startBattle("hallway_fight.png",'cleaning_lady.gif',50);
+			startBattle("../Level Design/hallWayBattle.png",'cleaning_lady.gif',50);
 		}
 		if(!transitionOutroX && locationEvent == "hallway" && endBattle)
 		{
@@ -311,14 +336,20 @@ function returnFromBattle()
 
 function mouseClick(event)
 {
-	if (event.offsetX !== undefined && event.offsetY !== undefined)
-	{
-		canvasX = event.offsetX;
-		canvasY = event.offsetY;
-	} else {
-		canvasX = event.layerX;
-		canvasY = event.layerY;
-	}
+	var totalOffsetX = 0;
+    var totalOffsetY = 0;
+    var canvasX = 0;
+    var canvasY = 0;
+	var element = canvas;
+
+    do{
+        totalOffsetX += element.offsetLeft - element.scrollLeft;
+        totalOffsetY += element.offsetTop - element.scrollTop;
+    }
+    while(element = element.offsetParent)
+
+    canvasX = event.pageX - totalOffsetX;
+    canvasY = event.pageY - totalOffsetY;
 	
 	if(300<canvasX && canvasX < 325 && 130<canvasY && canvasY<170 && locationEvent == 'classroom' && subjective.innerText == "Find the key.")
 	{
@@ -434,6 +465,23 @@ function updateMovement(evt)
 						npc2SizeX = 15;
 						npc2SizeY = 4;
 						keyPress = 0;
+					}
+				}
+				
+				if(posX == 960 && posY == 40 && keyPress)
+				{
+					if(ladyDefeated)
+					{
+						alertBox("You walked into the printer room. Shitz got realz!");
+						locationEvent = "PrintingRoom";
+						background.src = '../Level Design/'+locationEvent+'.png';
+						posX = 480;
+						posY = 640;
+						npc1.src = new Image;
+						keyPress = 0;
+					}
+					else {
+						alertBox("O-POOP!! The door is too filthy to open. Get the nice looking cleaning lady!");
 					}
 				}
 			}
@@ -1161,6 +1209,26 @@ function hitCharacter()
 	cutHeightY = 256;
 	sizeX = 120;
 	sizeY = 120;
+}
+
+function relMouseCoords(event){
+	var totalOffsetX = 0;
+    var totalOffsetY = 0;
+    var canvasX = 0;
+    var canvasY = 0;
+    var currentElement = this;
+	alert(currentElement.offsetLeft);
+
+    do{
+        totalOffsetX += currentElement.offsetLeft - currentElement.scrollLeft;
+        totalOffsetY += currentElement.offsetTop - currentElement.scrollTop;
+    }
+    while(currentElement = currentElement.offsetParent)
+
+    canvasX = event.pageX - totalOffsetX;
+    canvasY = event.pageY - totalOffsetY;
+	
+	return {x:canvasX, y:canvasY}
 }
 </script>
 
