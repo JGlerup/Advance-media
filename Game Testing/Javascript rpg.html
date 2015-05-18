@@ -179,8 +179,9 @@ var battleChar1PosY;
 var battleChar1SizeX;
 var battleChar1SizeY;
 var battleChar1cutPosX;
-var battleChar1cutWidthX;
 var battleChar1cutPosY;
+var battleChar1cutWidthX;
+var battleChar1cutHeightY;
 
 battleChar2 = new Image();
 var battleChar2PosX;
@@ -637,9 +638,13 @@ function updateMovement(evt)
 			caseNumber = 40;
 		  }
 		}
-		if(battle)
+		if(battle && yourTurn)
 		{
-			
+			yourTurn = 0;
+			punchAttackMethod();
+			moving = 1;
+			combatUnits = 80;
+			caseNumber = 40;
 		}
           break;
 
@@ -826,6 +831,62 @@ function updateAnimation(caseNumbers)
 				  {
 					resetChar();
 				  }
+				}
+				if(battle)
+				{
+					//alert(punchAttack);
+					//Battle animation punchAttack
+					combatUnits = combatUnits - 2;
+					if(combatUnits > 60)
+					{
+						battleChar1PosX = battleChar1PosX + 60;
+						battleChar1PosY = battleChar1PosY - 10;
+					}
+					if(combatUnits == 60)
+					{
+						battleChar1cutPosX = 254;
+					}
+					if(combatUnits == 50)
+					{
+						battleChar1cutPosX = 508;
+					}
+					if(combatUnits == 40)
+					{
+						battleChar1cutPosX = 762;
+					}
+					if(combatUnits == 30)
+					{
+						battleChar1cutPosX = 0;
+					}
+					if(combatUnits < 30 && combatUnits > 0)
+					{
+						battleChar1PosX = battleChar1PosX - 60;
+						battleChar1PosY = battleChar1PosY + 10;
+					}
+					if(combatUnits == 0)
+					{
+						opponentHealth-=punchAttackDamage();
+						if(opponentHealth <= 0)
+						{
+							opponentHealth = 0;
+						}
+						//alert('walla');
+						if(opponentTimeout)
+						{
+							clearTimeout(opponentTimeout);
+						}
+						if(opponentHealth > 0)
+						{
+							opponentTimeout = setTimeout(opponentAttack(), 5000);
+						}
+						punchAttack = 0;
+						battleChar1PosX = 120;
+						battleChar1PosY = 210;
+						battleChar1.src = "sprite.png";
+						battleChar1cutPosX = 1200;
+						battleChar1cutHeightY = 300;
+						battleChar1cutWidthX = 200;
+					}
 				}
 			break;
 			
@@ -1023,7 +1084,7 @@ if(battle && !transitionIntro)
 {
 	context.clearRect ( 0 , 0 , canvas.width, canvas.height );
 	context.drawImage(background,0,0,1280,720);
-	context.drawImage(battleChar1, battleChar1cutPosX, battleChar1cutPosY, cutWidthX, 300, battleChar1PosX, battleChar1PosY, battleChar1SizeX, battleChar1SizeY);
+	context.drawImage(battleChar1, battleChar1cutPosX, battleChar1cutPosY, battleChar1cutWidthX, battleChar1cutHeightY, battleChar1PosX, battleChar1PosY, battleChar1SizeX, battleChar1SizeY);
 	context.drawImage(battleChar2, 0, 0, cutWidthX, 300, battleChar2PosX, battleChar2PosY, battleChar2SizeX, battleChar2SizeY);
 	if(showHealthBars)
 	{
@@ -1060,6 +1121,7 @@ function startBattle(place,opponent,healthPoints)
 	battleChar1SizeY = 300;
 	battleChar1cutPosX = 1200;
 	battleChar1cutWidthX = 200;
+	battleChar1cutHeightY = 300;
 	battleChar1cutPosY = 0;
 			
 	battleChar2.src = opponent;
@@ -1150,9 +1212,22 @@ function gooAttackMethod()
 	gooAttack = 1;
 }
 
+function punchAttackMethod()
+{
+	punchAttack = 1;
+	battleChar1.src = "../Chars_sprites/Mand2/Attacks_deffences/slå_attack.png";
+	battleChar1cutHeightY = 500;
+	battleChar1cutWidthX = 254;
+}
+
 function gooAttackDamage()
 {
 	return randomIntFromInterval(7,12);
+}
+
+function punchAttackDamage()
+{
+	return randomIntFromInterval(10,15);
 }
 
 function randomIntFromInterval(min,max)
