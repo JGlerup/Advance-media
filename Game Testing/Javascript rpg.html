@@ -83,6 +83,7 @@ cutWidthX = 200;
 cutHeightY = 300;
 sizeX = 70;
 sizeY = 105;
+var mouseRuleXLow;
 var charReset;
 var door = 0;
 var doorToBusStop = 1;
@@ -146,10 +147,10 @@ background = new Image();
 background.src = '../Level Design/ClassRoom.png';
 
 transitionIntroImage = new Image();
-transitionIntroImage.src = 'transitionIntroImage.gif';
+transitionIntroImage.src = '../Level Design/Transitions/hallWayBattleBlur_trans.png';
 
 transitionOutroImage = new Image();
-transitionOutroImage.src = 'transitionOutroImage.gif';
+transitionOutroImage.src = '../Level Design/Transitions/hallwayBlur_trans.png';
 
 dickbutt = new Image();
 var dickbuttPosX;
@@ -342,6 +343,7 @@ function mouseClick(event)
     var canvasX = 0;
     var canvasY = 0;
 	var element = canvas;
+	
 
     do{
         totalOffsetX += element.offsetLeft - element.scrollLeft;
@@ -351,8 +353,12 @@ function mouseClick(event)
 
     canvasX = event.pageX - totalOffsetX;
     canvasY = event.pageY - totalOffsetY;
-	
-	if(300<canvasX && canvasX < 325 && 130<canvasY && canvasY<170 && locationEvent == 'classroom' && subjective.innerText == "Find the key.")
+	//alertBox("X:"+canvasX+" Y:"+canvasY);
+	mouseRuleXLow = (canvas.width/100)*21.1;
+	mouseRuleXHigh = (canvas.width/100)*23.4375;
+	mouseRuleYLow = (canvas.height/100)*16.66;
+	mouseRuleYHigh = (canvas.height/100)*22.22; 	
+	if(mouseRuleXLow<canvasX && canvasX < mouseRuleXHigh && mouseRuleYLow<canvasY && canvasY<mouseRuleYHigh && locationEvent == 'classroom' && subjective.innerText == "Find the key.")
 	{
 		// Find key in classroom event.
 		alertBox('You found the key!'+canvasX+" "+canvasY);
