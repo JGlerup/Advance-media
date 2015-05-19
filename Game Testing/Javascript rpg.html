@@ -25,6 +25,7 @@
   <body>
 	<audio id="music" type="audio/mp3" src="background1.mp3" autoplay></audio>
 	<audio id="footstep" type="audio/mp3" src="footstepFloor.mp3"></audio>
+	<audio id="soundEffect" type="audio/mp3" src=""></audio>
 	<header>
 		<div class="container-fluid">
 			<h1>The super duper nice fantastic game!</h1>
@@ -100,6 +101,7 @@ var transitionOutro = 0;
 var transitionOutroX = -1280;
 var footstep = document.getElementById('footstep');
 var music = document.getElementById('music');
+var soundEffect = document.getElementById('soundEffect');
 var subjective = document.getElementById("subjective");
 var objective = document.getElementById("objective");
 var moveSidePos = 0;
@@ -132,7 +134,7 @@ var opponentAttackPosY = 200;
 var opponentTimeout;
 
 base_image = new Image();
-base_image.src = 'sprite.png';
+base_image.src = '../Chars_sprites/allinonev3.png';
 
 whity = new Image();
 whity.src = 'white.png';
@@ -141,7 +143,7 @@ gooImage = new Image();
 gooImage.src = '../Weapons/snotter_fly.png';
 
 opponentAttackImage = new Image();
-opponentAttackImage.src = 'Caution.png';
+opponentAttackImage.src = '../Assets/Caution.png';
 
 background = new Image();
 background.src = '../Level Design/ClassRoom.png';
@@ -190,7 +192,7 @@ var battleChar2PosY;
 var battleChar2SizeX;
 var battleChar2SizeY;
 
-music.volume = 0.1; // VOLUME 0.1
+music.volume = 0.0; // VOLUME 0.1
 
 document.addEventListener('keydown', updateMovement);
 canvas.addEventListener('mousedown', mouseClick);
@@ -354,10 +356,10 @@ function mouseClick(event)
     canvasX = event.pageX - totalOffsetX;
     canvasY = event.pageY - totalOffsetY;
 	//alertBox("X:"+canvasX+" Y:"+canvasY);
-	mouseRuleXLow = (canvas.width/100)*21.1;
-	mouseRuleXHigh = (canvas.width/100)*23.4375;
-	mouseRuleYLow = (canvas.height/100)*16.66;
-	mouseRuleYHigh = (canvas.height/100)*22.22; 	
+	mouseRuleXLow = (canvas.offsetWidth/100)*21.1;
+	mouseRuleXHigh = (canvas.offsetWidth/100)*23.4375;
+	mouseRuleYLow = (canvas.offsetHeight/100)*16.66;
+	mouseRuleYHigh = (canvas.offsetHeight/100)*22.22; 	
 	if(mouseRuleXLow<canvasX && canvasX < mouseRuleXHigh && mouseRuleYLow<canvasY && canvasY<mouseRuleYHigh && locationEvent == 'classroom' && subjective.innerText == "Find the key.")
 	{
 		// Find key in classroom event.
@@ -850,24 +852,26 @@ function updateAnimation(caseNumbers)
 					}
 					if(combatUnits == 60)
 					{
-						battleChar1cutPosX = 254;
+						battleChar1cutPosX = 3000;
 					}
 					if(combatUnits == 50)
 					{
-						battleChar1cutPosX = 508;
+						battleChar1cutPosX = 3200;
 					}
 					if(combatUnits == 40)
 					{
-						battleChar1cutPosX = 762;
+						battleChar1cutPosX = 3400;
+						soundEffect.src = "../Sounds/klask.wav";
+						soundEffect.play();
 					}
 					if(combatUnits == 30)
 					{
-						battleChar1cutPosX = 0;
+						battleChar1cutPosX = 2800;
 					}
 					if(combatUnits < 30 && combatUnits > 0)
 					{
-						battleChar1PosX = battleChar1PosX - 60;
-						battleChar1PosY = battleChar1PosY + 10;
+						battleChar1PosX = battleChar1PosX - 35;
+						battleChar1PosY = battleChar1PosY + 6;
 					}
 					if(combatUnits == 0)
 					{
@@ -888,10 +892,6 @@ function updateAnimation(caseNumbers)
 						punchAttack = 0;
 						battleChar1PosX = 120;
 						battleChar1PosY = 210;
-						battleChar1.src = "sprite.png";
-						battleChar1cutPosX = 1200;
-						battleChar1cutHeightY = 300;
-						battleChar1cutWidthX = 200;
 					}
 				}
 			break;
@@ -925,8 +925,19 @@ function updateAnimation(caseNumbers)
 					//alert(gooAttack);
 					//Battle animation gooAttack
 					combatUnits = combatUnits - 5;
-					gooPosX = gooPosX + 40;
-					gooPosY = gooPosY - 5;
+					if(combatUnits == 75)
+					{
+						battleChar1cutPosX = 3800;
+					}
+					if(combatUnits == 65)
+					{
+						battleChar1cutPosX = 4000;
+					}
+					if(combatUnits < 66)
+					{
+						gooPosX = gooPosX + 45;
+						gooPosY = gooPosY - 8;
+					}
 					if(combatUnits == 0)
 					{
 						opponentHealth-=gooAttackDamage();
@@ -946,6 +957,7 @@ function updateAnimation(caseNumbers)
 						gooAttack = 0;
 						gooPosX = 250;
 						gooPosY = 250;
+						battleChar1cutPosX = 3600;
 					}
 				}
 			break;
@@ -977,13 +989,20 @@ function updateAnimation(caseNumbers)
 					combatUnits = combatUnits - 5;
 					opponentAttackPosX = opponentAttackPosX - 20;
 					opponentAttackPosY = opponentAttackPosY + 5;
+					if(combatUnits == 30)
+					{
+						battleChar1cutPosX = 4200;
+						soundEffect.src = "../Sounds/uurh.wav";
+						soundEffect.play();
+					}
 					if(!combatUnits)
 					{
 						doOpponentAttack = 0;
 						opponentAttackPosX = 650;
 						opponentAttackPosY = 250;
 						yourTurn = 1;
-						myHealth -= randomIntFromInterval(5,10); 
+						myHealth -= randomIntFromInterval(5,10);
+						battleChar1cutPosX = 2800;
 					}
 				}
 			break;
@@ -1077,6 +1096,8 @@ if(roam == 1)
 		case "busstop":
 			if(dickbutt)
 			{
+				context.drawImage(base_image, cutPosX, cutPosY, cutWidthX, cutHeightY, posX, posY, sizeX, sizeY);
+				drawEarly = 1;
 				context.drawImage(dickbutt, dickbuttCutPosX, dickbuttCutPosY, dickbuttCutHeightX, dickbuttCutHeightY, dickbuttPosX, dickbuttPosY, dickbuttSizeX, dickbuttSizeY);
 			}
 		break;
@@ -1221,9 +1242,6 @@ function gooAttackMethod()
 function punchAttackMethod()
 {
 	punchAttack = 1;
-	battleChar1.src = "../Chars_sprites/Mand2/Attacks_deffences/slå_attack.png";
-	battleChar1cutHeightY = 500;
-	battleChar1cutWidthX = 254;
 }
 
 function gooAttackDamage()
@@ -1266,7 +1284,7 @@ function startCyclingDickbutt()
 {
 	dickbutt.src = "../Assets/IndianBike.png";
 	dickbuttPosX = 0;
-	dickbuttPosY = 240;
+	dickbuttPosY = 200;
 	dickbuttSizeX = 363;
 	dickbuttSizeY = 161.5;
 	dickbuttCutPosX = 726;
@@ -1282,34 +1300,8 @@ function startCyclingDickbutt()
 
 function hitCharacter()
 {
-	base_image.src = "censored.png";
-	posY = posY + 40;
-	cutPosX = 0;
-	cutPosY = 0;
-	cutWidthX = 256;
-	cutHeightY = 256;
-	sizeX = 120;
-	sizeY = 120;
-}
-
-function relMouseCoords(event){
-	var totalOffsetX = 0;
-    var totalOffsetY = 0;
-    var canvasX = 0;
-    var canvasY = 0;
-    var currentElement = this;
-	alert(currentElement.offsetLeft);
-
-    do{
-        totalOffsetX += currentElement.offsetLeft - currentElement.scrollLeft;
-        totalOffsetY += currentElement.offsetTop - currentElement.scrollTop;
-    }
-    while(currentElement = currentElement.offsetParent)
-
-    canvasX = event.pageX - totalOffsetX;
-    canvasY = event.pageY - totalOffsetY;
-	
-	return {x:canvasX, y:canvasY}
+	//posY = posY + 40;
+	cutPosX = 4400;
 }
 </script>
 
