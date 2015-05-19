@@ -354,10 +354,10 @@ function mouseClick(event)
     canvasX = event.pageX - totalOffsetX;
     canvasY = event.pageY - totalOffsetY;
 	//alertBox("X:"+canvasX+" Y:"+canvasY);
-	mouseRuleXLow = (canvas.width/100)*21.1;
-	mouseRuleXHigh = (canvas.width/100)*23.4375;
-	mouseRuleYLow = (canvas.height/100)*16.66;
-	mouseRuleYHigh = (canvas.height/100)*22.22; 	
+	mouseRuleXLow = (canvas.offsetWidth/100)*21.1;
+	mouseRuleXHigh = (canvas.offsetWidth/100)*23.4375;
+	mouseRuleYLow = (canvas.offsetHeight/100)*16.66;
+	mouseRuleYHigh = (canvas.offsetHeight/100)*22.22; 	
 	if(mouseRuleXLow<canvasX && canvasX < mouseRuleXHigh && mouseRuleYLow<canvasY && canvasY<mouseRuleYHigh && locationEvent == 'classroom' && subjective.innerText == "Find the key.")
 	{
 		// Find key in classroom event.
@@ -850,24 +850,24 @@ function updateAnimation(caseNumbers)
 					}
 					if(combatUnits == 60)
 					{
-						battleChar1cutPosX = 254;
+						battleChar1cutPosX = 3000;
 					}
 					if(combatUnits == 50)
 					{
-						battleChar1cutPosX = 508;
+						battleChar1cutPosX = 3200;
 					}
 					if(combatUnits == 40)
 					{
-						battleChar1cutPosX = 762;
+						battleChar1cutPosX = 3400;
 					}
 					if(combatUnits == 30)
 					{
-						battleChar1cutPosX = 0;
+						battleChar1cutPosX = 2800;
 					}
 					if(combatUnits < 30 && combatUnits > 0)
 					{
-						battleChar1PosX = battleChar1PosX - 60;
-						battleChar1PosY = battleChar1PosY + 10;
+						battleChar1PosX = battleChar1PosX - 35;
+						battleChar1PosY = battleChar1PosY + 6;
 					}
 					if(combatUnits == 0)
 					{
@@ -888,10 +888,6 @@ function updateAnimation(caseNumbers)
 						punchAttack = 0;
 						battleChar1PosX = 120;
 						battleChar1PosY = 210;
-						battleChar1.src = "sprite.png";
-						battleChar1cutPosX = 1200;
-						battleChar1cutHeightY = 300;
-						battleChar1cutWidthX = 200;
 					}
 				}
 			break;
@@ -1221,9 +1217,6 @@ function gooAttackMethod()
 function punchAttackMethod()
 {
 	punchAttack = 1;
-	battleChar1.src = "../Chars_sprites/Mand2/Attacks_deffences/slå_attack.png";
-	battleChar1cutHeightY = 500;
-	battleChar1cutWidthX = 254;
 }
 
 function gooAttackDamage()
