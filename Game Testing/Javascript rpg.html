@@ -558,6 +558,7 @@ function updateMovement(evt)
 		  if(!moving && !restricted)
 		  {
 		  moving = 1;
+		  console.log(moving);
 		  units = 80;
           caseNumber = 37;
 		  }
@@ -603,6 +604,7 @@ function updateMovement(evt)
 		  if(!moving && !restricted)
 		  {
 			moving = 1;
+			console.log(moving);
 			units = 80;
 			caseNumber = 39;
 		  }
@@ -642,6 +644,7 @@ function updateMovement(evt)
 		  if(!moving && !restricted)
 		  {
 			moving = 1;
+			console.log(moving);
 			units = 80;
 			caseNumber = 40;
 		  }
@@ -686,6 +689,7 @@ function updateMovement(evt)
 		if(moving == 0 && restricted == 0)
 		  {
 			moving = 1;
+			console.log(moving);
 			units = 80;
 			caseNumber = 38;
 		  }
@@ -1015,9 +1019,9 @@ function updateAnimation(caseNumbers)
           posY = oldCharY;
     }
 		
-	if((units == 0 || units == 40 || combatUnits == 0) && moving == 1)
+	if((units == 0 || units == 40 || (combatUnits == 0 && battle)) && moving == 1)
 	{
-		if(units == 0 || combatUnits == 0)
+		if(units == 0 || (combatUnits == 0 && battle))
 		{
 			moving = 0;
 			transitionIntro = 0;
