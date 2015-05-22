@@ -87,7 +87,7 @@ sizeY = 105;
 var mouseRuleXLow;
 var charReset;
 var door = 0;
-var doorToBusStop = 1;
+var doorToBusStop = 0;
 var locationEvent = 'classroom';
 var moving = 0;
 var units = 0;
@@ -109,12 +109,15 @@ var movePos = 0;
 var trackNumber = 1;
 var whiteboardText;
 var randomText;
+var dialogText;
 var randomMessages = Array("BIP BIP BUB","~You can't touch this. DAA-DA-DA-DA~","PC shows BCoD. RIP PC.","Your PC got a virus. Good Job!","FORMAT C:");
 var timeRandomText;
+var timeDialogText;
 var drawEarly = 0;
 var roadWarning;
 var roadKill;
-var ladyDefeated = 1;
+var cleaningLadyDefeated = 0;
+var pauseGame;
 
 //Battle info
 var playerHealth = 100;
@@ -219,7 +222,7 @@ function render() {
     now = Date.now();
     delta = now - then;
      
-    if (delta > interval) {
+    if ((delta > interval) && !pauseGame) {
         // update time stuffs
          
         // Just `then = now` is not enough.
@@ -249,12 +252,14 @@ function update()
 		{
 			if(posY == 200 && !roadWarning)
 			{
-				alertBox("Sure! Walk on the road! Dork!");
+				//alertBox("Sure! Walk on the road! Dork!");
+				dialogText = "Sure! Walk on the road! Dork!";
 				roadWarning = 1;
 			}
 			if(posY == 280 && !roadKill)
 			{
-				alertBox('(ノಠ益ಠ)ノ彡︵ ┻━┻');
+				//alertBox('(ノಠ益ಠ)ノ彡︵ ┻━┻');
+				dialogText = '(ノಠ益ಠ)ノ彡︵ ┻━┻';
 				roadKill = 1;
 				startCyclingDickbutt();
 			}
@@ -279,7 +284,6 @@ function update()
 		}
 		if(!transitionOutroX && locationEvent == "hallway" && endBattle)
 		{
-			//startBattle("hallway_fight.png",'cleaning_lady.gif',50);
 			transitionOutro = 0;
 			transitionOutroX = -1280;
 			background.src = "../Level Design/"+locationEvent+".png";
@@ -335,7 +339,12 @@ function returnFromBattle()
 	switchTrack();
 	doOpponentAttack = 0;
 	gooAttack = 0;
-	alertBox('Cleaning lady yells: "ARHH NOW I DO ALL CLEAN. ;("');
+	//alertBox('Cleaning lady yells: "ARHH NOW I DO ALL CLEAN. ;("');
+	if(locationEvent == "hallway")
+	{
+		dialogText = 'Cleaning lady yells: "ARHH NOW I DO ALL CLEAN. ;("';
+		doorToBusStop = 1;
+	}
 }
 
 function mouseClick(event)
@@ -363,8 +372,8 @@ function mouseClick(event)
 	if(mouseRuleXLow<canvasX && canvasX < mouseRuleXHigh && mouseRuleYLow<canvasY && canvasY<mouseRuleYHigh && locationEvent == 'classroom' && subjective.innerText == "Find the key.")
 	{
 		// Find key in classroom event.
-		alertBox('You found the key!'+canvasX+" "+canvasY);
-	//	alertBox(canvasX+", "+canvasY);
+		dialogText = 'You found the key!';
+		//alertBox(canvasX+", "+canvasY);
 		door = 1;
 		npc2.src = '';
 		subjective.innerText = "";
@@ -388,138 +397,153 @@ function updateMovement(evt)
 
 		  // Ctrl
         case 17:
-		if(roam)
+		if(pauseGame)
 		{
-			var keyPress = 1;
-			if(locationEvent == 'classroom')
-			{
-				if (posX == 0 && posY == 400)
-				{
-					// If at door, Fire event
-					if(door == 1)
-					{
-						alertBox('You walked out the door using the key.');
-						locationEvent = 'hallway';
-						background.src = '../Level Design/'+locationEvent+'.png';
-						posX = 1200;
-						posY = 400;
-						npc1.src = 'cleaning_lady.gif';
-						npc1PosX = 640;
-						npc1PosY = 360;
-						npc1SizeX = 70;
-						npc1SizeY = 105;
-						subjective.innerText = "Talk to the friendly looking'ish cleaning lady.";
-						keyPress = 0;
-					}
-					else
-					{
-						alertBox('You cant get out. The door is  locked. "HINT: Something sparkles"');
-						subjective.innerText = "Find the key.";
-						npc2.src = '../Assets/key.png';
-						npc2PosX = 278;
-						npc2PosY = 129;
-						npc2SizeX = 15;
-						npc2SizeY = 4;
-						keyPress = 0;
-					}
-				}
-
-				if (400 <= posX && posX <= 720 && posY == 40 && !dickbutt.src)
-				{
-					whiteboardText = "Dickbutt";
-					startDickbutt();
-				}
-				  
-				if(posX == 720 && posY == 360)
-				{
-					randomPCMessage();
-				}
-			}
-			
-			if(locationEvent == 'hallway')
-			{
-				if(((posX == 640 && posY == 320) || (posX == 640 && posY == 400) || (posX == 560 && posY == 360) || (posX == 720 && posY == 360)) && keyPress)
-				{
-					alertBox('Cleaning lady yells: "U DO CLEAN!, NOT ME!"');
-					battleMusic();
-					//music.src = 'Hopeku___Blue_brass.mp3';
-					roam = 0;
-					moving = 1;
-					units = 30;
-					caseNumber = 200;
-					beginBattle = 1;
-					keyPress = 0;
-				}
-				
-				if(posX == 960 && posY == 600 && keyPress)
-				{
-					// If at door to bus stop, Fire event
-					if(doorToBusStop == 1)
-					{
-						alertBox('You walked out the door.');
-						locationEvent = 'busstop';
-						background.src = '../Level Design/'+locationEvent+'.png';
-						posX = 480;
-						posY = 0;
-						npc1 = new Image();
-						keyPress = 0;
-					}
-					else
-					{
-						alertBox('You cant get out. The door is  locked. "HINT: Something sparkles"');
-						subjective.innerText = "Find the key.";
-						npc2.src = '../Assets/key.png';
-						npc2PosX = 278;
-						npc2PosY = 129;
-						npc2SizeX = 15;
-						npc2SizeY = 4;
-						keyPress = 0;
-					}
-				}
-				
-				if(posX == 960 && posY == 40 && keyPress)
-				{
-					if(ladyDefeated)
-					{
-						alertBox("You walked into the printer room. Shitz got realz!");
-						locationEvent = "PrintingRoom";
-						background.src = '../Level Design/'+locationEvent+'.png';
-						posX = 480;
-						posY = 640;
-						npc1.src = new Image;
-						keyPress = 0;
-					}
-					else {
-						alertBox("O-POOP!! The door is too filthy to open. Get the nice looking cleaning lady!");
-					}
-				}
-			}
-			
-			if(locationEvent == 'busstop')
-			{				
-				if(posX == 480 && posY == 0 && keyPress)
-				{
-					// If at door to bus stop, Fire event
-					if(doorToBusStop == 1)
-					{
-						alertBox('You walked inside again.');
-						locationEvent = 'hallway';
-						background.src = '../Level Design/'+locationEvent+'.png';
-						posX = 960;
-						posY = 600;
-						npc1.src = 'cleaning_lady.gif';
-						npc1PosX = 640;
-						npc1PosY = 360;
-						npc1SizeX = 70;
-						npc1SizeY = 105;
-						keyPress = 0;
-					}
-				}
-			}
+			pauseGame = null;
+			dialogText = null;
 		}
-		if(battle)
-		{
-			
+		else {
+			if(roam)
+			{
+				var keyPress = 1;
+				if(locationEvent == 'classroom')
+				{
+					if (posX == 0 && posY == 400)
+					{
+						// If at door, Fire event
+						if(door == 1)
+						{
+							//alertBox('You walked out the door using the key.');
+							dialogText = "You walked out the door using the key.";
+							locationEvent = 'hallway';
+							background.src = '../Level Design/'+locationEvent+'.png';
+							posX = 1200;
+							posY = 400;
+							npc1.src = 'cleaning_lady.gif';
+							npc1PosX = 640;
+							npc1PosY = 360;
+							npc1SizeX = 70;
+							npc1SizeY = 105;
+							subjective.innerText = "Talk to the friendly looking'ish cleaning lady.";
+							keyPress = 0;
+						}
+						else
+						{
+							//alertBox('You cant get out. The door is  locked. "HINT: Something sparkles"');
+							dialogText = 'You cant get out. The door is  locked. "HINT: Something sparkles"';
+							subjective.innerText = "Find the key.";
+							npc2.src = '../Assets/key.png';
+							npc2PosX = 278;
+							npc2PosY = 129;
+							npc2SizeX = 15;
+							npc2SizeY = 4;
+							keyPress = 0;
+						}
+					}
+
+					if (400 <= posX && posX <= 720 && posY == 40 && !dickbutt.src)
+					{
+						whiteboardText = "Dickbutt";
+						startDickbutt();
+					}
+					  
+					if(posX == 720 && posY == 360)
+					{
+						randomPCMessage();
+					}
+				}
+				
+				if(locationEvent == 'hallway')
+				{
+					if(((posX == 640 && posY == 320) || (posX == 640 && posY == 400) || (posX == 560 && posY == 360) || (posX == 720 && posY == 360)) && keyPress)
+					{
+						if(cleaningLadyDefeated)
+						{
+							dialogText = 'Cleaning lady yells: "I HATE CLEAN! (angry sadface)"';
+						}
+						else {
+							//alertBox('Cleaning lady yells: "U DO CLEAN!, NOT ME!"');
+							dialogText = 'Cleaning lady yells: "U DO CLEAN!, NOT ME!"';
+							battleMusic();
+							//music.src = 'Hopeku___Blue_brass.mp3';
+							roam = 0;
+							moving = 1;
+							units = 30;
+							caseNumber = 200;
+							beginBattle = 1;
+							keyPress = 0;
+						}
+					}
+					
+					if(posX == 960 && posY == 600 && keyPress)
+					{
+						// If at door to bus stop, Fire event
+						if(doorToBusStop == 1)
+						{
+							//alertBox('You walked out the door.');
+							dialogText = 'You walked out the door.';
+							locationEvent = 'busstop';
+							background.src = '../Level Design/'+locationEvent+'.png';
+							posX = 480;
+							posY = 0;
+							npc1 = new Image();
+							keyPress = 0;
+						}
+						else
+						{
+							//alertBox('You cant get out. The door is  locked. "HINT: Something sparkles"');
+							dialogText = 'O-POOP!! The door is too filthy to open. Get the nice looking cleaning lady!';
+							subjective.innerText = "Still talk to the friendly looking cleaning lady! #Retard";
+							keyPress = 0;
+						}
+					}
+					
+					if(posX == 960 && posY == 40 && keyPress)
+					{
+						if(cleaningLadyDefeated)
+						{
+							//alertBox("You walked into the printer room. Shitz got realz!");
+							dialogText = "You walked into the printer room. Shitz got realz!";
+							locationEvent = "PrintingRoom";
+							background.src = '../Level Design/'+locationEvent+'.png';
+							posX = 480;
+							posY = 640;
+							npc1.src = new Image;
+							keyPress = 0;
+						}
+						else {
+							alertBox("O-POOP!! The door is too filthy to open. Get the nice looking cleaning lady!");
+						}
+					}
+				}
+				
+				if(locationEvent == 'busstop')
+				{				
+					if(posX == 480 && posY == 0 && keyPress)
+					{
+						// If at door to bus stop, Fire event
+						if(doorToBusStop == 1)
+						{
+							//alertBox('You walked inside again.');
+							dialogText = 'You walked inside again.';
+							locationEvent = 'hallway';
+							background.src = '../Level Design/'+locationEvent+'.png';
+							posX = 960;
+							posY = 600;
+							npc1.src = 'cleaning_lady.gif';
+							npc1PosX = 640;
+							npc1PosY = 360;
+							npc1SizeX = 70;
+							npc1SizeY = 105;
+							keyPress = 0;
+						}
+					}
+				}
+			}
+			if(battle)
+			{
+				
+			}
 		}
 		  
 		  
@@ -527,184 +551,196 @@ function updateMovement(evt)
 		
           // Left arrow.
         case 37:
-		if(roam)
+		if(!pauseGame)
 		{
-			if(locationEvent == 'classroom')
+			if(roam)
 			{
-				//Restricted areas in classroom
-			    if((posX-80 == 720 && posY == 200) || (posX-80 == 960 && posY == 320) || (posX-80 == 480 && posY == 400) || (posX-80 == 240 && posY == 40) || (posX == 0))
-			    {
-					flag = 1;
-					restricted = 1;
-				}
-			}
-			if(locationEvent == 'hallway')
-			{
-				//Restricted areas in hallway
-			    if((posX-80 == 640 && posY == 360) || (posX == 0))
-			    {
-					flag = 1;
-					restricted = 1;
-				}
-			}
-			if(locationEvent == 'busstop')
-			{
-				if(posY == 280)
+				if(locationEvent == 'classroom')
 				{
-					flag = 1;
-					restricted = 1;				
+					//Restricted areas in classroom
+					if((posX-80 == 720 && posY == 200) || (posX-80 == 960 && posY == 320) || (posX-80 == 480 && posY == 400) || (posX-80 == 240 && posY == 40) || (posX == 0))
+					{
+						flag = 1;
+						restricted = 1;
+					}
 				}
+				if(locationEvent == 'hallway')
+				{
+					//Restricted areas in hallway
+					if((posX-80 == 640 && posY == 360) || (posX == 0))
+					{
+						flag = 1;
+						restricted = 1;
+					}
+				}
+				if(locationEvent == 'busstop')
+				{
+					if(posY == 280)
+					{
+						flag = 1;
+						restricted = 1;				
+					}
+				}
+			  if(!moving && !restricted)
+			  {
+			  moving = 1;
+			  console.log(moving);
+			  units = 80;
+			  caseNumber = 37;
+			  }
+			  
 			}
-		  if(!moving && !restricted)
-		  {
-		  moving = 1;
-		  console.log(moving);
-		  units = 80;
-          caseNumber = 37;
-		  }
-		  
-		}
-		if(battle)
-		{
-			
+			if(battle)
+			{
+				
+			}
 		}
           break;
 		  
 
           // Right arrow.
         case 39:
-		if(roam)
+		if(!pauseGame)
 		{
-			if(locationEvent == 'classroom')
+			if(roam)
 			{
-				//Restricted areas in classroom
-			    if((posX+80 == 480 && posY == 200) || (posX+80 == 720 && posY == 320) || (posX+80 == 240 && posY == 400) || (posX+80 == 240 && posY == 40) || (posX+80 == 1280))
-			    {
-					flag = 1;
-					restricted = 1;
-				}
-			}
-			if(locationEvent == 'hallway')
-			{
-				//Restricted areas in classroom
-			    if((posX+80 == 640 && posY == 360) || (posX+80 == 1280))
-			    {
-					flag = 1;
-					restricted = 1;
-				}
-			}
-			if(locationEvent == 'busstop')
-			{
-				if(posY == 280)
+				if(locationEvent == 'classroom')
 				{
-					flag = 1;
-					restricted = 1;				
+					//Restricted areas in classroom
+					if((posX+80 == 480 && posY == 200) || (posX+80 == 720 && posY == 320) || (posX+80 == 240 && posY == 400) || (posX+80 == 240 && posY == 40) || (posX+80 == 1280))
+					{
+						flag = 1;
+						restricted = 1;
+					}
 				}
+				if(locationEvent == 'hallway')
+				{
+					//Restricted areas in classroom
+					if((posX+80 == 640 && posY == 360) || (posX+80 == 1280))
+					{
+						flag = 1;
+						restricted = 1;
+					}
+				}
+				if(locationEvent == 'busstop')
+				{
+					if(posY == 280)
+					{
+						flag = 1;
+						restricted = 1;				
+					}
+				}
+			  if(!moving && !restricted)
+			  {
+				moving = 1;
+				console.log(moving);
+				units = 80;
+				caseNumber = 39;
+			  }
 			}
-		  if(!moving && !restricted)
-		  {
-			moving = 1;
-			console.log(moving);
-			units = 80;
-			caseNumber = 39;
-		  }
 		}
           break;
 
           // Down arrow
         case 40:
-		if(roam)
+		if(!pauseGame)
 		{
-			if(locationEvent == 'classroom')
+			if(roam)
 			{
-				//Restricted areas in classroom
-			    if((480 <= posX && posX <= 720 && posY+40 == 200) || (720 <= posX && posX <= 960 && posY+40 == 320) || (240 <= posX && posX <= 480 && posY+40 == 400) || (posY == 600))
-			    {
-					flag = 1;
-					restricted = 1;
-				}
-			}
-			if(locationEvent == 'hallway')
-			{
-				//Restricted areas in classroom
-			    if((posX == 640 && posY+40 == 360) || (posY == 600))
-			    {
-					flag = 1;
-					restricted = 1;
-				}
-			}
-			if(locationEvent == 'busstop')
-			{
-				if(posY == 280)
+				if(locationEvent == 'classroom')
 				{
-					flag = 1;
-					restricted = 1;				
+					//Restricted areas in classroom
+					if((480 <= posX && posX <= 720 && posY+40 == 200) || (720 <= posX && posX <= 960 && posY+40 == 320) || (240 <= posX && posX <= 480 && posY+40 == 400) || (posY == 600))
+					{
+						flag = 1;
+						restricted = 1;
+					}
 				}
+				if(locationEvent == 'hallway')
+				{
+					//Restricted areas in classroom
+					if((posX == 640 && posY+40 == 360) || (posY == 600))
+					{
+						flag = 1;
+						restricted = 1;
+					}
+				}
+				if(locationEvent == 'busstop')
+				{
+					if(posY == 280)
+					{
+						flag = 1;
+						restricted = 1;				
+					}
+				}
+			  if(!moving && !restricted)
+			  {
+				moving = 1;
+				console.log(moving);
+				units = 80;
+				caseNumber = 40;
+			  }
 			}
-		  if(!moving && !restricted)
-		  {
-			moving = 1;
-			console.log(moving);
-			units = 80;
-			caseNumber = 40;
-		  }
-		}
-		if(battle && yourTurn)
-		{
-			yourTurn = 0;
-			punchAttackMethod();
-			moving = 1;
-			combatUnits = 80;
-			caseNumber = 40;
+			if(battle && yourTurn)
+			{
+				yourTurn = 0;
+				punchAttackMethod();
+				moving = 1;
+				combatUnits = 80;
+				caseNumber = 40;
+			}
 		}
           break;
 
           // Up arrow 
         case 38:
-		if(roam)
+		if(!pauseGame)
 		{
-		if(locationEvent == 'classroom')
-		{
-			if((480 <= posX && posX <= 720 && posY-40 == 200) || (720 <= posX && posX <= 960 && posY-40 == 320) || (240 <= posX && posX <= 480 && posY-40 == 400) || (posX == 240 && posY-40 == 40) || (posY-40 < 40)) {
-				flag = 1;
-				restricted = 1;
-			}
-			
-		}
-		if(locationEvent == 'hallway')
-		{	  
-			  if((640 == posX && posY-40 == 360) || (posY-40 < 40)) {
-				flag = 1;
-				restricted = 1;
-			  }
-		}
-		if(locationEvent == 'busstop')
+			if(roam)
 			{
-				if(posY == 280)
-				{
+			if(locationEvent == 'classroom')
+			{
+				if((480 <= posX && posX <= 720 && posY-40 == 200) || (720 <= posX && posX <= 960 && posY-40 == 320) || (240 <= posX && posX <= 480 && posY-40 == 400) || (posX == 240 && posY-40 == 40) || (posY-40 < 40)) {
 					flag = 1;
-					restricted = 1;				
+					restricted = 1;
 				}
+				
 			}
-		if(moving == 0 && restricted == 0)
-		  {
-			moving = 1;
-			console.log(moving);
-			units = 80;
-			caseNumber = 38;
-		  }
-		}
-		if(battle && yourTurn)
-		{
-			yourTurn = 0;
-			gooAttackMethod();
-			moving = 1;
-			combatUnits = 80;
-			caseNumber = 38;
-		}
-		else {
-			flag = 1;
-			restricted = 1;
+			if(locationEvent == 'hallway')
+			{	  
+				  if((640 == posX && posY-40 == 360) || (posY-40 < 40)) {
+					flag = 1;
+					restricted = 1;
+				  }
+			}
+			if(locationEvent == 'busstop')
+				{
+					if(posY == 280)
+					{
+						flag = 1;
+						restricted = 1;				
+					}
+				}
+			if(moving == 0 && restricted == 0)
+			  {
+				moving = 1;
+				console.log(moving);
+				units = 80;
+				caseNumber = 38;
+			  }
+			}
+			if(battle && yourTurn)
+			{
+				yourTurn = 0;
+				gooAttackMethod();
+				moving = 1;
+				combatUnits = 80;
+				caseNumber = 38;
+			}
+			else {
+				flag = 1;
+				restricted = 1;
+			}
 		}
           break;
 
@@ -882,7 +918,7 @@ function updateAnimation(caseNumbers)
 						opponentHealth-=punchAttackDamage();
 						if(opponentHealth <= 0)
 						{
-							opponentHealth = 0;
+							opponentDefeated();
 						}
 						//alert('walla');
 						if(opponentTimeout)
@@ -947,7 +983,7 @@ function updateAnimation(caseNumbers)
 						opponentHealth-=gooAttackDamage();
 						if(opponentHealth <= 0)
 						{
-							opponentHealth = 0;
+							opponentDefeated();
 						}
 						//alert('walla');
 						if(opponentTimeout)
@@ -1075,14 +1111,18 @@ if(roam == 1)
 				context.font="20px Comic-Sans";
 				var textWidth = context.measureText(randomText);
 				drawBubble(context, 770,330,textWidth.width+10, 30, 20);	
-				// Create gradient
-				var gradient=context.createLinearGradient(700,0,800,0);
-				gradient.addColorStop("0","green");
-				gradient.addColorStop("0.5","green");
-				gradient.addColorStop("1.0","green");
-				// Fill with gradient
-				context.fillStyle=gradient;
+				context.fillStyle="green";
 				context.fillText(randomText,775,350);
+			}
+			if(dialogText)
+			{
+				context.font="20px Comic-Sans";
+				//alertBox(dialogText);
+				var textWidth = context.measureText(dialogText);
+				drawDialog(context, 400,100,textWidth.width+10, 30, 20);
+				context.fillStyle="black";
+				context.fillText(dialogText,405,120);
+				pauseGame = 1;
 			}
 		break;
 		
@@ -1095,6 +1135,16 @@ if(roam == 1)
 				drawEarly = 0;
 			}
 			context.drawImage(npc1, npc1PosX, npc1PosY, npc1SizeX, npc1SizeY);
+			if(dialogText)
+			{
+				context.font="20px Comic-Sans";
+				//alertBox(dialogText);
+				var textWidth = context.measureText(dialogText);
+				drawDialog(context, 400,100,textWidth.width+10, 30, 20);
+				context.fillStyle="black";
+				context.fillText(dialogText,405,120);
+				pauseGame = 1;
+			}
 		break;
 		
 		case "busstop":
@@ -1103,6 +1153,16 @@ if(roam == 1)
 				context.drawImage(base_image, cutPosX, cutPosY, cutWidthX, cutHeightY, posX, posY, sizeX, sizeY);
 				drawEarly = 1;
 				context.drawImage(dickbutt, dickbuttCutPosX, dickbuttCutPosY, dickbuttCutHeightX, dickbuttCutHeightY, dickbuttPosX, dickbuttPosY, dickbuttSizeX, dickbuttSizeY);
+			}
+			if(dialogText)
+			{
+				context.font="20px Comic-Sans";
+				//alertBox(dialogText);
+				var textWidth = context.measureText(dialogText);
+				drawDialog(context, 400,100,textWidth.width+10, 30, 20);
+				context.fillStyle="black";
+				context.fillText(dialogText,405,120);
+				pauseGame = 1;
 			}
 		break;
 	}
@@ -1215,7 +1275,35 @@ function randomPCMessage()
 	timeRandomText = setTimeout(function(){randomText = null;}, 2000);
 }
 
+function dialogBubble(dialog)
+{
+	dialogText = dialog;
+}
+
 function drawBubble(ctx, x, y, w, h, radius)
+{
+  var r = x + w;
+  var b = y + h;
+  ctx.beginPath();
+  ctx.strokeStyle="black";
+  ctx.lineWidth="2";
+  ctx.moveTo(x+radius, y);
+  ctx.lineTo(r-radius, y);
+  ctx.quadraticCurveTo(r, y, r, y+radius);
+  ctx.lineTo(r, y+h-radius);
+  ctx.quadraticCurveTo(r, b, r-radius, b);
+  ctx.lineTo(x+radius, b);
+  ctx.lineTo(x+radius/2, y+50);
+  ctx.lineTo(x+radius * 2, y+30);
+  ctx.quadraticCurveTo(x, b, x, b-radius);
+  ctx.lineTo(x, y+radius);
+  ctx.quadraticCurveTo(x, y, x+radius, y);
+  ctx.stroke();
+  ctx.fillStyle="white";
+  ctx.fill()
+}
+
+function drawDialog(ctx, x, y, w, h, radius)
 {
   var r = x + w;
   var b = y + h;
@@ -1306,6 +1394,15 @@ function hitCharacter()
 {
 	//posY = posY + 40;
 	cutPosX = 4400;
+}
+
+function opponentDefeated()
+{
+	opponentHealth = 0;
+	if(locationEvent == "hallway")
+	{
+		cleaningLadyDefeated = 1;
+	}
 }
 </script>
 
