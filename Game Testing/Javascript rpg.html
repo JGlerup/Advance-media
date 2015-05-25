@@ -46,6 +46,8 @@
 				<p><span id="objective">Get out of the classroom.</span></p>
 				<p><span id="subjective"></span>
 			</article>
+			<button type="button" onclick="ajaxDatabaseAccess('save','Glerup')">Save</button>
+			<div id="txtResponse"></div>
 		</div>
 	</section>
 <script>
@@ -1403,6 +1405,22 @@ function opponentDefeated()
 	{
 		cleaningLadyDefeated = 1;
 	}
+}
+
+function ajaxDatabaseAccess(what,user) {
+    if (what.length == 0) { 
+        document.getElementById("txtResponse").innerHTML = "Error";
+        return;
+    } else {
+        var xmlhttp = new XMLHttpRequest();
+        xmlhttp.onreadystatechange = function() {
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                document.getElementById("txtResponse").innerHTML = xmlhttp.responseText;
+            }
+        }
+        xmlhttp.open("GET", "../Database access/model.php?method="+what+"&user="+user+"&posx="+posX+"&posy="+posY, true);
+        xmlhttp.send();
+    }
 }
 </script>
 
